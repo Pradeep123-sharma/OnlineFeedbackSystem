@@ -1,2 +1,6 @@
 ﻿
 .vs/
+
+# Production configuration
+OnlineFeedbackSystem/appsettings.json
+OnlineFeedbackSystem/appsettings.json.bak
