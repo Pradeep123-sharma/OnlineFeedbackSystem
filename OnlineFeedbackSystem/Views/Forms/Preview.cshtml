@@ -209,6 +209,7 @@
                         @switch (q.QuestionType)
                         {
                             case "5-Star Rating":
+                            case "Rating5":
                                 <div class="clay-star-rating">
                                     <button type="button" class="clay-star-btn" onclick="setStar(this, 1)">⭐️</button>
                                     <button type="button" class="clay-star-btn" onclick="setStar(this, 2)">⭐️</button>
@@ -219,6 +220,7 @@
                                 break;
 
                             case "1-10 Rating":
+                            case "Rating10":
                                 <div class="clay-scale-10">
                                     @for (int n = 1; n <= 10; n++)
                                     {
@@ -228,6 +230,7 @@
                                 break;
 
                             case "Single Choice":
+                            case "SingleChoice":
                                 <div class="clay-choice-grid">
                                     @foreach (var opt in q.Options)
                                     {
@@ -240,6 +243,7 @@
                                 break;
 
                             case "Multiple Choice":
+                            case "MultipleChoice":
                                 <div class="clay-choice-grid">
                                     @foreach (var opt in q.Options)
                                     {
@@ -252,6 +256,7 @@
                                 break;
 
                             case "Yes/No":
+                            case "YesNo":
                                 <div class="clay-yes-no-grid">
                                     <button type="button" class="clay-yn-btn" onclick="setYN(this)">👍 Yes</button>
                                     <button type="button" class="clay-yn-btn" onclick="setYN(this)">👎 No</button>
