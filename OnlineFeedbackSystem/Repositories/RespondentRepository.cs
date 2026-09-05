@@ -211,12 +211,12 @@ namespace OnlineFeedbackSystem.Repositories
                     string? answerText = null;
                     double? numericValue = ans.NumericAnswer;
 
-                    if (ans.QuestionType == "5-Star Rating" || ans.QuestionType == "1-10 Rating")
+                    if (ans.QuestionType == "5-Star Rating" || ans.QuestionType == "Rating5" || ans.QuestionType == "1-10 Rating" || ans.QuestionType == "Rating10")
                     {
                         numericValue = ans.NumericAnswer;
                         answerText = ans.NumericAnswer?.ToString();
                     }
-                    else if (ans.QuestionType == "Multiple Choice" && ans.SelectedChoices != null && ans.SelectedChoices.Count > 0)
+                    else if ((ans.QuestionType == "Multiple Choice" || ans.QuestionType == "MultipleChoice") && ans.SelectedChoices != null && ans.SelectedChoices.Count > 0)
                     {
                         answerText = string.Join(", ", ans.SelectedChoices);
                     }

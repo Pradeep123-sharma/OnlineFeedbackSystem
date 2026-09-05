@@ -39,8 +39,13 @@
     </div>
 </div>
 
-<!-- ===== Options Section (Shown only for choices / dropdown) ===== -->
-<div id="optionsSection" class="qb-options-section @(Model.QuestionType == "SingleChoice" || Model.QuestionType == "MultipleChoice" || Model.QuestionType == "Dropdown" ? "" : "qb-hidden")">
+@{
+    var rawType = (Model.QuestionType ?? "").ToLowerInvariant().Replace(" ", "").Replace("-", "").Replace("_", "");
+    var isChoiceType = rawType == "singlechoice" || rawType == "multiplechoice" || rawType == "dropdown";
+}
+
+<!-- ===== Options Section (Shown for Single Choice, Multiple Choice, and Dropdown) ===== -->
+<div id="optionsSection" class="qb-options-section @(isChoiceType ? "" : "qb-hidden")">
     <label class="qb-options-label">Choice Options</label>
     <p class="qb-options-hint">Define the options the respondent can choose from.</p>
 
@@ -82,12 +87,18 @@
 </div>
 
 <script>
+    function isOptionType(val) {
+        if (!val) return false;
+        const v = val.toLowerCase().replace(/[\s\-_]/g, '');
+        return v === 'singlechoice' || v === 'multiplechoice' || v === 'dropdown';
+    }
+
     function updateOptionsVisibility() {
         const typeSelect = document.getElementById('questionTypeSelect');
         const optionsSection = document.getElementById('optionsSection');
-        const type = typeSelect.value;
+        if (!typeSelect || !optionsSection) return;
 
-        if (type === 'SingleChoice' || type === 'MultipleChoice' || type === 'Dropdown') {
+        if (isOptionType(typeSelect.value)) {
             optionsSection.classList.remove('qb-hidden');
         } else {
             optionsSection.classList.add('qb-hidden');

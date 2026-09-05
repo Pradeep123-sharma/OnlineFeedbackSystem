@@ -146,18 +146,23 @@
                         <td>
                             @switch (q.QuestionType)
                             {
+                                case "5-Star Rating":
                                 case "Rating5":
                                     <span class="type-pill" style="background:#FFEACC; color:#D97706;">⭐️ 5-Star</span>
                                     break;
+                                case "1-10 Rating":
                                 case "Rating10":
                                     <span class="type-pill" style="background:#E0E7FF; color:#4338CA;">🔟 1–10</span>
                                     break;
+                                case "Single Choice":
                                 case "SingleChoice":
                                     <span class="type-pill" style="background:#EDE5FF; color:var(--grape-dark);">🔘 Single choice</span>
                                     break;
+                                case "Multiple Choice":
                                 case "MultipleChoice":
                                     <span class="type-pill" style="background:#D7F7EC; color:var(--mint-dark);">☑️ Multiple choice</span>
                                     break;
+                                case "Yes/No":
                                 case "YesNo":
                                     <span class="type-pill" style="background:#FEF3C7; color:#B45309;">⚖️ Yes / No</span>
                                     break;
