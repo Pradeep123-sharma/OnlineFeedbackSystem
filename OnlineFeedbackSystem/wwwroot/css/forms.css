@@ -1,0 +1,159 @@
+/* ==========================================================
+   Pulse — Claymorphism Form & Search Bar Styles
+   ========================================================== */
+
+/* Universal Clay Input Styles */
+input.clay-input,
+textarea.clay-textarea,
+select.clay-select,
+.clay-input,
+.clay-select,
+.clay-textarea {
+    display: block;
+    width: 100%;
+    font-family: var(--font-body) !important;
+    font-size: 14.5px !important;
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+    padding: 13px 20px !important;
+    border: none !important;
+    outline: none !important;
+    border-radius: var(--radius-sm, 16px) !important;
+    background: var(--clay-soft, #E9ECF9) !important;
+    box-shadow: inset 5px 5px 10px rgba(159, 163, 204, 0.4), inset -5px -5px 10px rgba(255, 255, 255, 0.85) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+input.clay-input::placeholder,
+textarea.clay-textarea::placeholder,
+.clay-input::placeholder,
+.clay-textarea::placeholder {
+    color: var(--ink-faint, #9694AC) !important;
+    font-weight: 500 !important;
+    opacity: 0.9 !important;
+}
+
+input.clay-input:focus,
+textarea.clay-textarea:focus,
+select.clay-select:focus,
+.clay-input:focus,
+.clay-select:focus,
+.clay-textarea:focus {
+    background: #E2E6F6 !important;
+    box-shadow: inset 5px 5px 10px rgba(159, 163, 204, 0.45), inset -5px -5px 10px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(255, 140, 122, 0.45) !important;
+}
+
+/* Clay Select Dropdown Custom Chevron */
+select.clay-select,
+.clay-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10' viewBox='0 0 16 10'%3E%3Cpath d='M2 2l6 6 6-6' stroke='%236B6885' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 18px center !important;
+    padding-right: 48px !important;
+    cursor: pointer !important;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+}
+
+.clay-textarea {
+    resize: vertical;
+    min-height: 95px;
+    font-family: var(--font-body);
+}
+
+.field-error {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--coral-dark);
+    margin-top: 6px;
+}
+
+.form-error-summary {
+    color: var(--coral-dark);
+    font-size: 13.5px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: #FEE2E2;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+}
+
+.form-error-summary:empty {
+    display: none;
+}
+
+.form-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    cursor: pointer;
+}
+
+.form-checkbox-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--mint-dark);
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.form-checkbox-row label {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+/* Clay Search Bar & Filter Toolbars */
+.clay-filter-bar,
+.forms-filters,
+.qb-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    background: rgba(233, 236, 249, 0.6);
+    padding: 14px 18px;
+    border-radius: var(--radius-md, 22px);
+    box-shadow: inset 4px 4px 8px rgba(159, 163, 204, 0.25), inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+    margin-bottom: 24px;
+}
+
+.clay-search-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    align-items: center;
+}
+
+.clay-search-wrapper .search-icon {
+    position: absolute;
+    left: 16px;
+    font-size: 15px;
+    color: var(--ink-faint);
+    pointer-events: none;
+}
+
+.clay-search-wrapper .clay-input {
+    padding-left: 44px !important;
+}

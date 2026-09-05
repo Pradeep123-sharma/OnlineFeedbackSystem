@@ -1,0 +1,136 @@
+@model OnlineFeedbackSystem.Models.ViewModels.AdminDashboardViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Admin Dashboard — Pulse";
+    ViewData["PageTitle"] = "Feedback overview";
+    ViewData["PageEyebrow"] = "Admin Portal";
+    ViewData["ActiveNav"] = "Dashboard";
+}
+
+<!-- ===== Admin Stat Cards (Claymorphism) ===== -->
+<section class="dash-stats-grid">
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-coral">&#128203;</span>
+        <span class="dash-stat-num">@Model.TotalForms</span>
+        <span class="dash-stat-label">Total forms</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-mint">&#9889;</span>
+        <span class="dash-stat-num">@Model.ActiveForms</span>
+        <span class="dash-stat-label">Active / Live forms</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-sky">&#128172;</span>
+        <span class="dash-stat-num">@Model.TotalResponses</span>
+        <span class="dash-stat-label">Total responses</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-sun">&#11088;</span>
+        <span class="dash-stat-num">@Model.AverageRating.ToString("0.0")</span>
+        <span class="dash-stat-label">Average satisfaction</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-grape">&#129504;</span>
+        <span class="dash-stat-num">@Model.TotalQuestionsInBank</span>
+        <span class="dash-stat-label">Question bank pool</span>
+    </div>
+</section>
+
+<div class="dash-lower-grid">
+
+    <!-- ===== Recent Feedback Forms ===== -->
+    <section class="dash-panel clay-card">
+        <div class="dash-panel-head">
+            <div>
+                <h2>Recent feedback forms</h2>
+                <p class="dash-panel-sub" style="margin-top:4px;">Quick overview of recently configured forms.</p>
+            </div>
+            <a asp-controller="Forms" asp-action="Index" class="dash-panel-link">View all forms &rarr;</a>
+        </div>
+
+        @if (Model.RecentForms.Count == 0)
+        {
+            <div style="text-align:center; padding: 30px 10px;">
+                <p class="dash-empty">No feedback forms created yet.</p>
+                <a asp-controller="Forms" asp-action="Create" class="btn btn-primary btn-sm" style="margin-top:10px;">+ Create first form</a>
+            </div>
+        }
+        else
+        {
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>Form title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Questions</th>
+                        <th>Responses</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var form in Model.RecentForms)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@form.Title</strong>
+                                <div style="font-size: 11px; color: var(--ink-faint); margin-top:2px;">
+                                    @form.StartDate.ToString("dd MMM yyyy") &ndash; @form.EndDate.ToString("dd MMM yyyy")
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@form.Category</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-@form.Status.ToLower()">@form.Status</span>
+                            </td>
+                            <td>@form.QuestionCount</td>
+                            <td>
+                                <strong>@form.ResponseCount</strong>
+                            </td>
+                            <td>
+                                <a asp-controller="Forms" asp-action="Builder" asp-route-id="@form.Id" class="dash-panel-link" style="font-weight:700; font-size:12.5px;">Builder</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <!-- ===== Admin Quick Actions ===== -->
+    <section class="dash-panel clay-card">
+        <div class="dash-panel-head">
+            <h2>Feedback actions</h2>
+        </div>
+        <p class="dash-panel-sub">Manage your feedback pipeline.</p>
+
+        <div class="quick-action-list">
+            <a asp-controller="Forms" asp-action="Create" class="quick-action">
+                <span class="q-emoji">&#10024;</span>
+                <span>Create new form</span>
+            </a>
+            <a asp-controller="Forms" asp-action="Index" class="quick-action">
+                <span class="q-emoji">&#128203;</span>
+                <span>Manage all forms</span>
+            </a>
+            <a asp-controller="QuestionBank" asp-action="Index" class="quick-action">
+                <span class="q-emoji">&#129504;</span>
+                <span>Question bank</span>
+            </a>
+            <a asp-controller="QuestionBank" asp-action="Create" class="quick-action">
+                <span class="q-emoji">&#10133;</span>
+                <span>Add reusable question</span>
+            </a>
+            <a href="/Responses" class="quick-action">
+                <span class="q-emoji">&#128172;</span>
+                <span>Review responses</span>
+            </a>
+            <a href="/Analytics" class="quick-action">
+                <span class="q-emoji">&#128202;</span>
+                <span>View analytics</span>
+            </a>
+        </div>
+    </section>
+
+</div>

@@ -1,0 +1,111 @@
+@model OnlineFeedbackSystem.Models.ViewModels.FeedbackFormCreateEditViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Feedback Form — Pulse";
+    ViewData["PageTitle"] = "Create feedback form";
+    ViewData["PageEyebrow"] = "Admin / Form Setup";
+    ViewData["ActiveNav"] = "Forms";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+}
+
+<section class="dash-panel clay-card" style="max-width: 760px; margin: 0 auto; padding: 32px 36px;">
+    <div class="dash-panel-head" style="margin-bottom: 24px;">
+        <div>
+            <h2>Basic Form Information</h2>
+            <p class="dash-panel-sub" style="margin-top:4px;">Define title, target category, active dates, and privacy settings.</p>
+        </div>
+    </div>
+
+    <form asp-controller="Forms" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="form-error-summary"></div>
+
+        <div class="form-group">
+            <label asp-for="Title">Form Title *</label>
+            <input asp-for="Title" class="clay-input" placeholder="e.g. BCA Semester 1 Course Feedback" />
+            <span asp-validation-for="Title" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description">Description / Instructions</label>
+            <textarea asp-for="Description" class="clay-textarea" placeholder="Provide background or guidance for respondents filling out this form." rows="3"></textarea>
+            <span asp-validation-for="Description" class="field-error"></span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="form-group">
+            <div>
+                <label asp-for="Category">Category *</label>
+                <input asp-for="Category" class="clay-input" list="categoryPresets" placeholder="Select or type category (e.g. Academic, Services)" />
+                <datalist id="categoryPresets">
+                    @if (ViewBag.Categories != null)
+                    {
+                        @foreach (var cat in ViewBag.Categories)
+                        {
+                            <option value="@cat" />
+                        }
+                    }
+                    <option value="Academic" />
+                    <option value="Course Content" />
+                    <option value="Faculty & Teaching" />
+                    <option value="Campus Facilities" />
+                    <option value="Student Services" />
+                    <option value="General Survey" />
+                </datalist>
+                <span asp-validation-for="Category" class="field-error"></span>
+            </div>
+            <div>
+                <label asp-for="DepartmentId">Target Department</label>
+                <select asp-for="DepartmentId" class="clay-select" style="width: 100%;">
+                    <option value="">-- All Departments / None --</option>
+                    @if (ViewBag.ActiveDepartments != null)
+                    {
+                        foreach (var dept in (List<OnlineFeedbackSystem.Models.Entities.Departments>)ViewBag.ActiveDepartments)
+                        {
+                            <option value="@dept.DepartmentId">🏛 @dept.DepartmentName</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="DepartmentId" class="field-error"></span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;" class="form-group">
+            <div>
+                <label asp-for="StartDate">Start Date *</label>
+                <input asp-for="StartDate" type="date" class="clay-input" />
+                <span asp-validation-for="StartDate" class="field-error"></span>
+            </div>
+            <div>
+                <label asp-for="EndDate">End Date *</label>
+                <input asp-for="EndDate" type="date" class="clay-input" />
+                <span asp-validation-for="EndDate" class="field-error"></span>
+            </div>
+        </div>
+
+        <div style="background: var(--clay-soft); padding: 18px 20px; border-radius: var(--radius-sm); margin: 24px 0;">
+            <label style="font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 12px; display: block;">Privacy &amp; Submission Rules</label>
+
+            <div class="form-checkbox-row" style="margin-bottom: 12px;">
+                <input asp-for="IsAnonymous" type="checkbox" id="anonCheck" />
+                <label for="anonCheck">
+                    <strong>Anonymous mode:</strong> Hide respondent names &amp; emails in reports
+                </label>
+            </div>
+
+            <div class="form-checkbox-row" style="margin-bottom: 0;">
+                <input asp-for="OneResponseOnly" type="checkbox" id="oneRespCheck" />
+                <label for="oneRespCheck">
+                    <strong>One response only:</strong> Prevent multiple submissions from the same respondent
+                </label>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+            <a asp-controller="Forms" asp-action="Index" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save &amp; Continue to Form Builder &rarr;</button>
+        </div>
+    </form>
+</section>

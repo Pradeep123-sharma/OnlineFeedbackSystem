@@ -1,0 +1,22 @@
+﻿@model OnlineFeedbackSystem.Models.ViewModels.DepartmentViewModel;
+
+<div asp-validation-summary="ModelOnly" class="form-error-summary"></div>
+
+<input type="hidden" asp-for="DepartmentId" />
+
+<div class="form-group">
+    <label asp-for="DepartmentName">Department name</label>
+    <input asp-for="DepartmentName" class="clay-input" placeholder="e.g. Computer Science" />
+    <span asp-validation-for="DepartmentName" class="field-error"></span>
+</div>
+
+<div class="form-checkbox-row">
+    <input asp-for="IsActive" type="checkbox" />
+    <label asp-for="IsActive">Active</label>
+</div>
+
+<div class="qb-form-actions">
+    <a asp-controller="Department" asp-action="Index" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save department</button>
+</div>
+

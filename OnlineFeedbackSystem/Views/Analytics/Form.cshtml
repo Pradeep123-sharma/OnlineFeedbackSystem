@@ -1,0 +1,244 @@
+@model OnlineFeedbackSystem.Models.ViewModels.FormAnalyticsViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Analytics — " + Model.Title;
+    ViewData["PageTitle"] = "Form analytics";
+    ViewData["PageEyebrow"] = "Admin / Performance & Insights";
+    ViewData["ActiveNav"] = "Analytics";
+}
+
+@section Styles {
+    <style>
+        .analytics-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .analytics-q-card {
+            background: var(--clay-soft);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            box-shadow: inset 2px 2px 4px rgba(0,0,0,0.03);
+        }
+
+        .clay-progress-bar {
+            height: 14px;
+            border-radius: 999px;
+            background: var(--clay);
+            box-shadow: var(--shadow-in);
+            overflow: hidden;
+            position: relative;
+            margin-top: 6px;
+        }
+
+        .clay-progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--mint), var(--mint-dark));
+            transition: width 0.4s ease;
+        }
+
+        .alert-card {
+            background: #FEE2E2;
+            border-radius: var(--radius-sm);
+            padding: 12px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comment-card {
+            background: rgba(255,255,255,0.7);
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.05);
+        }
+
+        @@media (max-width: 900px) {
+            .analytics-kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+}
+
+<!-- Top Summary Header -->
+<section class="dash-panel clay-card" style="margin-bottom: 24px; padding: 24px 28px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+        <div>
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
+                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@Model.Category</span>
+                <span class="status-badge status-@Model.Status.ToLower()">@Model.Status</span>
+            </div>
+            <h2 style="margin:0 0 4px 0;">@Model.Title</h2>
+            <div style="font-size:12.5px; color:var(--ink-soft);">
+                Active Period: <strong>@Model.StartDate.ToString("dd MMM yyyy")</strong> &ndash; <strong>@Model.EndDate.ToString("dd MMM yyyy")</strong>
+            </div>
+        </div>
+        <div style="display:flex; gap:12px;">
+            <a asp-controller="Responses" asp-action="Index" asp-route-formId="@Model.FormId" class="btn btn-secondary btn-sm">
+                💬 View Responses
+            </a>
+            <a asp-controller="Analytics" asp-action="Export" asp-route-id="@Model.FormId" class="btn btn-primary btn-sm">
+                📥 Export CSV / Excel
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- KPI Cards -->
+<div class="analytics-kpi-grid">
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-sky">&#128172;</span>
+        <span class="dash-stat-num">@Model.TotalResponses</span>
+        <span class="dash-stat-label">Total responses</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-sun">&#11088;</span>
+        <span class="dash-stat-num">@Model.OverallAverageRating.ToString("0.0")</span>
+        <span class="dash-stat-label">Overall rating</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-grape">&#129504;</span>
+        <span class="dash-stat-num">@Model.QuestionCount</span>
+        <span class="dash-stat-label">Questions in survey</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-coral">&#9888;</span>
+        <span class="dash-stat-num">@Model.LowRatingAlerts.Count</span>
+        <span class="dash-stat-label">Low score alerts</span>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+
+    <!-- Left Column: Question-wise Analysis -->
+    <section class="dash-panel clay-card" style="padding: 24px;">
+        <div class="dash-panel-head" style="margin-bottom: 20px;">
+            <h2>Question-wise Statistics</h2>
+        </div>
+
+        @if (!Model.QuestionAnalytics.Any())
+        {
+            <p class="dash-empty">No question analysis available.</p>
+        }
+        else
+        {
+            @for (int i = 0; i < Model.QuestionAnalytics.Count; i++)
+            {
+                var q = Model.QuestionAnalytics[i];
+                <div class="analytics-q-card">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                        <strong style="font-size:14.5px; color:var(--ink);">@(i + 1). @q.QuestionText</strong>
+                        <span class="badge" style="background:#EDE5FF; color:var(--grape-dark); font-size:11px; padding:2px 8px; border-radius:999px; margin-left:12px; flex-shrink:0;">
+                            @q.QuestionType
+                        </span>
+                    </div>
+
+                    <div style="font-size:12px; color:var(--ink-soft); margin-bottom:12px;">
+                        Total Answers: <strong>@q.TotalAnswers</strong>
+                    </div>
+
+                    @if (q.AverageScore.HasValue)
+                    {
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                            <span style="font-size:18px; color:#D97706; font-weight:800;">⭐️ @q.AverageScore.Value.ToString("0.0")</span>
+                            <div class="clay-progress-bar" style="flex:1;">
+                                <div class="clay-progress-fill" style="width: @(q.QuestionType == "Rating10" ? (q.AverageScore.Value * 10) : (q.AverageScore.Value * 20))%;"></div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (q.OptionBreakdown != null && q.OptionBreakdown.Any())
+                    {
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                            @foreach (var opt in q.OptionBreakdown)
+                            {
+                                <div>
+                                    <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:700; color:var(--ink);">
+                                        <span>@opt.OptionText</span>
+                                        <span>@opt.Count (@opt.Percentage%)</span>
+                                    </div>
+                                    <div class="clay-progress-bar">
+                                        <div class="clay-progress-fill" style="width: @opt.Percentage%;"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </section>
+
+    <!-- Right Column: Low Rating Alerts & Comments -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+
+        <!-- Low Rating Alerts Panel -->
+        <section class="dash-panel clay-card" style="padding: 24px;">
+            <div class="dash-panel-head" style="margin-bottom: 16px;">
+                <h3 style="margin:0; font-size:17px; color:var(--coral-dark);">⚠️ Low Rating Alerts</h3>
+            </div>
+
+            @if (!Model.LowRatingAlerts.Any())
+            {
+                <p class="dash-empty" style="padding:10px 0;">No low ratings recorded. Great performance!</p>
+            }
+            else
+            {
+                @foreach (var alert in Model.LowRatingAlerts)
+                {
+                    <div class="alert-card">
+                        <div>
+                            <div style="font-size:12.5px; font-weight:800; color:var(--ink);">@alert.QuestionText</div>
+                            <div style="font-size:11px; color:var(--ink-soft); margin-top:2px;">
+                                @alert.RespondentInfo &bull; @alert.SubmittedAt.ToString("dd MMM, hh:mm tt")
+                            </div>
+                        </div>
+                        <span style="font-weight:800; color:var(--coral-dark); font-size:14px;">
+                            ⭐️ @alert.RatingValue
+                        </span>
+                    </div>
+                }
+            }
+        </section>
+
+        <!-- Qualitative Comments Panel -->
+        <section class="dash-panel clay-card" style="padding: 24px;">
+            <div class="dash-panel-head" style="margin-bottom: 16px;">
+                <h3 style="margin:0; font-size:17px;">💬 Suggestions &amp; Comments</h3>
+            </div>
+
+            @if (!Model.TextComments.Any())
+            {
+                <p class="dash-empty" style="padding:10px 0;">No text suggestions submitted yet.</p>
+            }
+            else
+            {
+                <div style="max-height: 450px; overflow-y: auto;">
+                    @foreach (var c in Model.TextComments)
+                    {
+                        <div class="comment-card">
+                            <div style="font-size:11.5px; font-weight:700; color:var(--grape-dark); margin-bottom:4px;">
+                                @c.QuestionText
+                            </div>
+                            <p style="font-size:13.5px; color:var(--ink); line-height:1.4; margin-bottom:4px;">
+                                &ldquo;@c.Comment&rdquo;
+                            </p>
+                            <div style="font-size:10.5px; color:var(--ink-faint); text-align:right;">
+                                @c.RespondentInfo &bull; @c.SubmittedAt.ToString("dd MMM yyyy")
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+    </div>
+
+</div>

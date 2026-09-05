@@ -1,0 +1,24 @@
+﻿@model OnlineFeedbackSystem.Models.ViewModels.DepartmentViewModel
+
+@{
+    Layout = "_DashboardLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/question-bank.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/departments.css" asp-append-version="true" />
+}
+
+<section class="dash-panel clay-card qb-form-panel">
+    <form asp-controller="Department" asp-action="Create" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <partial name="_DepartmentForm" model="Model" />
+    </form>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+}

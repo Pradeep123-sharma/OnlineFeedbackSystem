@@ -1,0 +1,27 @@
+@model OnlineFeedbackSystem.Models.ViewModels.QuestionCreateEditViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Add Question — Pulse";
+    ViewData["PageTitle"] = "Add new question";
+    ViewData["PageEyebrow"] = "Admin / Question bank";
+    ViewData["ActiveNav"] = "QuestionBank";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/questionbank.css" asp-append-version="true" />
+}
+
+<section class="dash-panel clay-card qb-form-panel" style="margin: 0 auto;">
+    <div class="dash-panel-head" style="margin-bottom: 24px;">
+        <div>
+            <h2>Question Details</h2>
+            <p class="dash-panel-sub" style="margin-top:4px;">Define a standardized question to use in your feedback forms.</p>
+        </div>
+    </div>
+
+    <form asp-controller="QuestionBank" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <partial name="_QuestionForm" model="Model" />
+    </form>
+</section>

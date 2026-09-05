@@ -1,0 +1,186 @@
+@model List<OnlineFeedbackSystem.Models.ViewModels.UserListItemViewModel>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["ActiveNav"] = "Users";
+    ViewData["PageTitle"] = "Users";
+    ViewData["Title"] = "Users — Pulse";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+    <style>
+        .user-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .user-table th:nth-child(1),
+        .user-table td:nth-child(1) { width: 18%; }
+
+        .user-table th:nth-child(2),
+        .user-table td:nth-child(2) { width: 24%; }
+
+        .user-table th:nth-child(3),
+        .user-table td:nth-child(3) { width: 14%; }
+
+        .user-table th:nth-child(4),
+        .user-table td:nth-child(4) { width: 18%; }
+
+        .user-table th:nth-child(5),
+        .user-table td:nth-child(5) { width: 10%; }
+
+        .user-table th:nth-child(6),
+        .user-table td:nth-child(6) { width: 16%; }
+
+        .user-table td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-actions-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn-action-deactivate {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--coral-dark);
+            background: #FEE2E2;
+            border: none;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+            transition: background 0.15s ease;
+        }
+
+        .btn-action-deactivate:hover { background: #FECACA; }
+
+        .btn-action-activate {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--mint-dark);
+            background: #D7F7EC;
+            border: none;
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 999px;
+            white-space: nowrap;
+            transition: background 0.15s ease;
+        }
+
+        .btn-action-activate:hover { background: #A7F3D0; }
+
+        .inline-form { display: inline; }
+
+        .role-pill {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 700;
+            background: #EDE5FF;
+            color: var(--grape-dark);
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+    </style>
+}
+
+<section class="dash-panel clay-card" style="padding: 26px 24px;">
+    <div class="dash-panel-head">
+        <div>
+            <h2>All Users</h2>
+            <p class="dash-panel-sub" style="margin-top:4px;">Manage system users, roles and access permissions.</p>
+        </div>
+        <a asp-controller="User" asp-action="Create" class="btn btn-primary btn-sm">+ Add User</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div style="background:#D7F7EC; color:var(--mint-dark); font-weight:700; font-size:13.5px; padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:16px;">
+            ✓ @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div style="background:#FEE2E2; color:var(--coral-dark); font-weight:700; font-size:13.5px; padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:16px;">
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div style="text-align: center; padding: 40px 20px;">
+            <span style="font-size: 38px; display: block; margin-bottom: 10px;">👤</span>
+            <p class="dash-empty">No users yet. Add your first one to start assigning access.</p>
+            <a asp-controller="User" asp-action="Create" class="btn btn-primary btn-sm" style="margin-top:12px;">+ Add User</a>
+        </div>
+    }
+    else
+    {
+        <table class="dash-table user-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong style="color:var(--ink);">@u.FullName</strong>
+                        </td>
+                        <td style="font-size:13px; color:var(--ink-soft);">@u.Email</td>
+                        <td>
+                            <span class="role-pill">@u.RoleName</span>
+                        </td>
+                        <td style="font-size:13px; color:var(--ink-soft);">@u.DepartmentName</td>
+                        <td>
+                            @if (u.IsActive)
+                            {
+                                <span class="status-badge status-published">Active</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-archived">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="user-actions-wrap">
+                                @if (u.IsActive)
+                                {
+                                    <form asp-controller="User" asp-action="ToggleStatus" asp-route-id="@u.UserId" method="post" class="inline-form">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-action-deactivate"
+                                                onclick="return confirm('Deactivate @u.FullName?');">
+                                            Deactivate
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-controller="User" asp-action="ToggleStatus" asp-route-id="@u.UserId" method="post" class="inline-form">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn-action-activate">
+                                            Activate
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>

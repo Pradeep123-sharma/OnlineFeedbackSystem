@@ -1,0 +1,535 @@
+﻿@model OnlineFeedbackSystem.Models.ViewModels.AdminSettingsViewModel
+@{
+    bool isSuperAdmin = User.IsInRole("SuperAdmin");
+    Layout = isSuperAdmin ? "_DashboardLayout" : "_AdminLayout";
+    ViewData["Title"] = "Settings — Pulse";
+    ViewData["PageTitle"] = "System & Account Settings";
+    ViewData["PageEyebrow"] = isSuperAdmin ? "Super Admin / System" : "Admin / Preferences";
+    ViewData["ActiveNav"] = "Settings";
+}
+
+@section Styles {
+    <style>
+        /* Tab Navigation */
+        .settings-nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 26px;
+            flex-wrap: wrap;
+        }
+
+        .settings-tab-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            background: var(--clay-soft);
+            box-shadow: var(--shadow-out);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+
+        .settings-tab-btn:hover {
+            color: var(--ink);
+            transform: translateY(-2px);
+        }
+
+        .settings-tab-btn.active {
+            background: #FFEACC;
+            color: #D97706;
+            box-shadow: var(--shadow-in);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .settings-single-panel {
+            max-width: 840px;
+        }
+
+        /* Clay Toggle Switch */
+        .clay-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--clay-soft);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-out);
+            margin-bottom: 16px;
+            transition: transform 0.15s ease;
+        }
+
+        .clay-toggle-wrapper:hover {
+            transform: translateY(-1px);
+        }
+
+        .clay-toggle-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .clay-toggle-title {
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 14.5px;
+            color: var(--ink);
+        }
+
+        .clay-toggle-desc {
+            font-size: 12.5px;
+            color: var(--ink-faint);
+        }
+
+        .switch-input {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+            min-width: 48px;
+        }
+
+        .switch-input input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #D9DCF0;
+            box-shadow: inset 2px 2px 5px rgba(159, 163, 204, 0.4);
+            transition: 0.3s;
+            border-radius: 999px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: linear-gradient(135deg, var(--mint), var(--mint-dark));
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Profile details card */
+        .profile-summary-box {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 22px;
+            background: var(--clay-soft);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-in);
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar-bubble {
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .profile-meta-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        .profile-meta-sub {
+            font-size: 13px;
+            color: var(--ink-faint);
+            margin-top: 2px;
+        }
+
+        .rating-threshold-display {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--coral-dark);
+            background: #FFE1DB;
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
+        @@media (max-width: 900px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<!-- ===== Alerts & Success Messages ===== -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="background:#D7F7EC; color:var(--mint-dark); font-weight:700; font-size:14px; padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:20px; box-shadow:var(--shadow-out);">
+        &#10004; @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="field-error" style="background:#FEE2E2; padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:20px;">
+        &#9888; @TempData["ErrorMessage"]
+    </div>
+}
+
+<!-- ===== Settings Tabs ===== -->
+<div class="settings-nav-tabs">
+    <a asp-controller="Settings" asp-action="Index" asp-route-tab="profile" class="settings-tab-btn @(Model.ActiveTab == "profile" ? "active" : "")">
+        &#128100; Profile &amp; Security
+    </a>
+    <a asp-controller="Settings" asp-action="Index" asp-route-tab="notifications" class="settings-tab-btn @(Model.ActiveTab == "notifications" ? "active" : "")">
+        &#128276; Notification Rules
+    </a>
+    <a asp-controller="Settings" asp-action="Index" asp-route-tab="formDefaults" class="settings-tab-btn @(Model.ActiveTab == "formDefaults" ? "active" : "")">
+        &#128203; Form Defaults
+    </a>
+    <a asp-controller="Settings" asp-action="Index" asp-route-tab="system" class="settings-tab-btn @(Model.ActiveTab == "system" ? "active" : "")">
+        &#9881; System &amp; Security
+    </a>
+</div>
+
+<!-- ========================================================================= -->
+<!-- TAB 1: PROFILE & SECURITY                                                -->
+<!-- ========================================================================= -->
+@if (Model.ActiveTab == "profile")
+{
+    <div class="settings-grid">
+        <!-- Edit Profile Panel -->
+        <section class="dash-panel clay-card">
+            <div class="dash-panel-head">
+                <h2>Admin Profile</h2>
+            </div>
+            <p class="dash-panel-sub">Manage your account information and contact email.</p>
+
+            <div class="profile-summary-box">
+                <div class="profile-avatar-bubble">&#128100;</div>
+                <div>
+                    <h3 class="profile-meta-title">@Model.FullName</h3>
+                    <p class="profile-meta-sub">
+                        <span class="badge" style="box-shadow:none; background:#EAEBF7; color:var(--ink-soft); font-size:11px; padding:2px 8px; margin-bottom:0;">
+                            @Model.RoleName
+                        </span> &bull; @Model.DepartmentName
+                    </p>
+                </div>
+            </div>
+
+            <form asp-controller="Settings" asp-action="UpdateProfile" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="form-group">
+                    <label asp-for="FullName">Full Name *</label>
+                    <input asp-for="FullName" class="clay-input" placeholder="e.g. John Doe" />
+                    <span asp-validation-for="FullName" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">Email Address *</label>
+                    <input asp-for="Email" class="clay-input" placeholder="admin@example.com" />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:10px;">
+                    Save Profile Changes
+                </button>
+            </form>
+        </section>
+
+        <!-- Change Password Panel -->
+        <section class="dash-panel clay-card">
+            <div class="dash-panel-head">
+                <h2>Change Password</h2>
+            </div>
+            <p class="dash-panel-sub">Update your secret credentials to keep your administrator account secure.</p>
+
+            <form asp-controller="Settings" asp-action="ChangePassword" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="form-group">
+                    <label asp-for="CurrentPassword">Current Password *</label>
+                    <input asp-for="CurrentPassword" type="password" class="clay-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
+                    <span asp-validation-for="CurrentPassword" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NewPassword">New Password (min 6 characters) *</label>
+                    <input asp-for="NewPassword" type="password" class="clay-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
+                    <span asp-validation-for="NewPassword" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword">Confirm New Password *</label>
+                    <input asp-for="ConfirmPassword" type="password" class="clay-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" />
+                    <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-ghost" style="margin-top:10px; font-weight:700;">
+                    &#128274; Update Password
+                </button>
+            </form>
+        </section>
+    </div>
+}
+
+<!-- ========================================================================= -->
+<!-- TAB 2: NOTIFICATION & ALERT RULES                                         -->
+<!-- ========================================================================= -->
+@if (Model.ActiveTab == "notifications")
+{
+    <section class="dash-panel clay-card settings-single-panel">
+        <div class="dash-panel-head">
+            <h2>Notification Rules &amp; Alert Preferences</h2>
+        </div>
+        <p class="dash-panel-sub">Configure how and when the system alerts you about respondent submissions, low scores, and form activity.</p>
+
+        <form asp-controller="Settings" asp-action="UpdateNotificationPreferences" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="UserId" />
+
+            <!-- Toggle 1: New Response Email -->
+            <div class="clay-toggle-wrapper">
+                <div class="clay-toggle-text">
+                    <span class="clay-toggle-title">&#128172; New Response Alert</span>
+                    <span class="clay-toggle-desc">Receive an instant in-app and email alert whenever a respondent submits a form.</span>
+                </div>
+                <label class="switch-input">
+                    <input type="checkbox" asp-for="EmailOnNewResponse" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Low Rating Alert Threshold Slider/Box -->
+            <div class="clay-toggle-wrapper" style="flex-direction:column; align-items:stretch; gap:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div class="clay-toggle-text">
+                        <span class="clay-toggle-title">&#9888;&#65039; Critical Low-Rating Warning Trigger</span>
+                        <span class="clay-toggle-desc">Trigger a high-priority warning when an answer rating falls below this threshold.</span>
+                    </div>
+                    <span class="rating-threshold-display" id="thresholdValueText">&le; @Model.LowRatingAlertThreshold.ToString("0.0") &#11088;</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:16px; margin-top:6px;">
+                    <input type="range" asp-for="LowRatingAlertThreshold" min="1.0" max="4.5" step="0.5" 
+                           class="clay-input" style="padding:0 !important; cursor:pointer;" 
+                           oninput="document.getElementById('thresholdValueText').innerText = '&le; ' + parseFloat(this.value).toFixed(1) + ' â­';" />
+                </div>
+            </div>
+
+            <!-- Toggle 2: Form Closure Notifications -->
+            <div class="clay-toggle-wrapper">
+                <div class="clay-toggle-text">
+                    <span class="clay-toggle-title">&#128274; Form Closure &amp; Deadline Reminders</span>
+                    <span class="clay-toggle-desc">Alert admin when a feedback form reaches its end date and automatically closes.</span>
+                </div>
+                <label class="switch-input">
+                    <input type="checkbox" asp-for="NotifyOnFormClosure" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Toggle 3: Milestone Celebrations -->
+            <div class="clay-toggle-wrapper">
+                <div class="clay-toggle-text">
+                    <span class="clay-toggle-title">&#127881; Response Volume Milestones</span>
+                    <span class="clay-toggle-desc">Receive milestone celebration notifications when forms cross 10, 50, 100, and 500 responses.</span>
+                </div>
+                <label class="switch-input">
+                    <input type="checkbox" asp-for="NotifyOnMilestone" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <!-- Toggle 4: Daily Digest -->
+            <div class="clay-toggle-wrapper">
+                <div class="clay-toggle-text">
+                    <span class="clay-toggle-title">&#128196; Daily Feedback Summary Digest</span>
+                    <span class="clay-toggle-desc">Receive a consolidated end-of-day summary email with average satisfaction metrics.</span>
+                </div>
+                <label class="switch-input">
+                    <input type="checkbox" asp-for="DailyDigestEnabled" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top:14px;">
+                Save Notification Rules
+            </button>
+        </form>
+    </section>
+}
+
+<!-- ========================================================================= -->
+<!-- TAB 3: FEEDBACK FORM DEFAULTS                                             -->
+<!-- ========================================================================= -->
+@if (Model.ActiveTab == "formDefaults")
+{
+    <section class="dash-panel clay-card settings-single-panel">
+        <div class="dash-panel-head">
+            <h2>Feedback Form Preset Defaults</h2>
+        </div>
+        <p class="dash-panel-sub">Pre-fill standard parameters automatically when you create a new feedback form.</p>
+
+        <form asp-controller="Settings" asp-action="UpdateFormDefaults" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="form-group">
+                <label asp-for="DefaultValidityDays">Default Form Duration (Days) *</label>
+                <input asp-for="DefaultValidityDays" type="number" min="1" max="365" class="clay-input" style="max-width:240px;" />
+                <span asp-validation-for="DefaultValidityDays" class="field-error"></span>
+                <span style="font-size:12px; color:var(--ink-faint); margin-top:4px; display:block;">End date will be automatically set to today + this number of days.</span>
+            </div>
+
+            <div class="clay-toggle-wrapper">
+                <div class="clay-toggle-text">
+                    <span class="clay-toggle-title">&#128104;&#8205;&#128100; Default to Anonymous Responses</span>
+                    <span class="clay-toggle-desc">Hide respondent identity by default for all newly created feedback forms.</span>
+                </div>
+                <label class="switch-input">
+                    <input type="checkbox" asp-for="DefaultIsAnonymous" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="clay-toggle-wrapper">
+                <div class="clay-toggle-text">
+                    <span class="clay-toggle-title">&#128279; Enforce One-Response-Per-User Rule</span>
+                    <span class="clay-toggle-desc">Prevent duplicate submissions by default for identified respondents.</span>
+                </div>
+                <label class="switch-input">
+                    <input type="checkbox" asp-for="DefaultOneResponseOnly" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="form-group" style="margin-top:20px;">
+                <label asp-for="DefaultWelcomeMessage">Default Welcome / Instructions Message</label>
+                <textarea asp-for="DefaultWelcomeMessage" class="clay-textarea" rows="3" placeholder="Enter greeting shown to respondents..."></textarea>
+                <span asp-validation-for="DefaultWelcomeMessage" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DefaultThankYouMessage">Default Submission Confirmation Message</label>
+                <textarea asp-for="DefaultThankYouMessage" class="clay-textarea" rows="3" placeholder="Enter confirmation shown upon successful submission..."></textarea>
+                <span asp-validation-for="DefaultThankYouMessage" class="field-error"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top:14px;">
+                Save Form Defaults
+            </button>
+        </form>
+    </section>
+}
+
+<!-- ========================================================================= -->
+<!-- TAB 4: SYSTEM & SECURITY PREFERENCES                                      -->
+<!-- ========================================================================= -->
+@if (Model.ActiveTab == "system")
+{
+    <div class="settings-grid">
+        <section class="dash-panel clay-card">
+            <div class="dash-panel-head">
+                <h2>System &amp; Export Config</h2>
+            </div>
+            <p class="dash-panel-sub">Global administrative preferences and report export behaviors.</p>
+
+            <form asp-controller="Settings" asp-action="UpdateSystemPreferences" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="UserId" />
+
+                <div class="form-group">
+                    <label asp-for="ExportFormatPreference">Preferred Analytics Export Format</label>
+                    <select asp-for="ExportFormatPreference" class="clay-select">
+                        <option value="Excel">Microsoft Excel (.xlsx)</option>
+                        <option value="PDF">Adobe Acrobat Document (.pdf)</option>
+                        <option value="CSV">Comma Separated Values (.csv)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="MaxQuestionsPerForm">Maximum Questions per Feedback Form</label>
+                    <input asp-for="MaxQuestionsPerForm" type="number" min="5" max="100" class="clay-input" />
+                    <span asp-validation-for="MaxQuestionsPerForm" class="field-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SessionTimeoutMinutes">Admin Session Inactivity Timeout (Minutes)</label>
+                    <input asp-for="SessionTimeoutMinutes" type="number" min="15" max="1440" class="clay-input" />
+                    <span asp-validation-for="SessionTimeoutMinutes" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:14px;">
+                    Save System Config
+                </button>
+            </form>
+        </section>
+
+        <!-- System Reset & Diagnostics Card -->
+        <section class="dash-panel clay-card">
+            <div class="dash-panel-head">
+                <h2>System Diagnostics &amp; Reset</h2>
+            </div>
+            <p class="dash-panel-sub">Restore factory defaults or inspect system environment.</p>
+
+            <div style="background:var(--clay-soft); padding:18px 20px; border-radius:var(--radius-sm); box-shadow:var(--shadow-in); margin-bottom:24px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+                    <span style="color:var(--ink-faint); font-weight:700;">Platform:</span>
+                    <span style="font-weight:700; color:var(--ink);">ASP.NET Core / .NET 8</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+                    <span style="color:var(--ink-faint); font-weight:700;">Database:</span>
+                    <span style="font-weight:700; color:var(--ink);">Microsoft SQL Server (feedbackdb)</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:13px;">
+                    <span style="color:var(--ink-faint); font-weight:700;">Design System:</span>
+                    <span style="font-weight:700; color:var(--coral-dark);">Pulse Claymorphism UI</span>
+                </div>
+            </div>
+
+            <form asp-controller="Settings" asp-action="ResetDefaults" method="post" onsubmit="return confirm('Are you sure you want to reset all preferences back to default system values?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-ghost" style="color:var(--coral-dark); font-weight:700;">
+                    &#9851; Reset Preferences to Default
+                </button>
+            </form>
+        </section>
+    </div>
+}
+

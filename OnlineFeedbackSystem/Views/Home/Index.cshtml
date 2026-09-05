@@ -1,0 +1,279 @@
+@{
+    Layout = null;
+    ViewData["Title"] = "Pulse — Online Feedback System";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+</head>
+<body>
+
+    <!-- ===== Navbar ===== -->
+    <header class="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="brand">
+                <span class="brand-mark">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12h4l2-7 4 14 2-7h6" stroke="#33314B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </span>
+                Pulse
+            </a>
+
+            <nav class="nav-links" id="navLinks">
+                <a asp-controller="Respondent" asp-action="Index">Fill Feedback</a>
+                <a href="#questions">Question types</a>
+                <a href="#features">Features</a>
+            </nav>
+
+            <div class="nav-actions">
+                <a asp-controller="Respondent" asp-action="Index" class="btn btn-ghost">Browse Surveys</a>
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Sign in</a>
+            </div>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+        <div class="hero-text">
+            <span class="badge">Built for colleges, teams and companies</span>
+            <h1>Feedback that's actually <span class="text-pop">easy to ask for.</span></h1>
+            <p class="hero-sub">
+                Pulse replaces the paper form with a feedback system built to be built:
+                create a form, add your questions, publish it, and watch responses
+                turn into answers your team can act on.
+            </p>
+            <div class="hero-actions">
+                <a asp-controller="Respondent" asp-action="Index" class="btn btn-primary btn-lg">Browse Active Surveys</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-ghost btn-lg">Sign Up &rarr;</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-clay">
+                    <span class="stat-num">15</span>
+                    <span class="stat-label">workflow stages, start to report</span>
+                </div>
+                <div class="stat-clay">
+                    <span class="stat-num">8</span>
+                    <span class="stat-label">question types to choose from</span>
+                </div>
+                <div class="stat-clay">
+                    <span class="stat-num">5</span>
+                    <span class="stat-label">roles, from admin to viewer</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+            <div class="clay-panel clay-panel-main">
+                <div class="clay-panel-head">
+                    <span class="dot dot-coral"></span>
+                    <span class="dot dot-sun"></span>
+                    <span class="dot dot-mint"></span>
+                </div>
+                <p class="clay-question">How would you rate this semester's course delivery?</p>
+                <div class="clay-stars">
+                    <span class="star filled">&#9733;</span>
+                    <span class="star filled">&#9733;</span>
+                    <span class="star filled">&#9733;</span>
+                    <span class="star filled">&#9733;</span>
+                    <span class="star">&#9733;</span>
+                </div>
+                <div class="clay-bar-row">
+                    <span class="clay-bar-label">Very satisfied</span>
+                    <div class="clay-bar"><div class="clay-bar-fill" style="width:78%"></div></div>
+                </div>
+                <button class="clay-submit" type="button">Submit response</button>
+            </div>
+
+            <div class="clay-chip chip-float chip-1">
+                <span class="chip-icon">&#10003;</span> Response saved
+            </div>
+            <div class="clay-chip chip-float chip-2">
+                Avg rating <strong>4.6</strong>
+            </div>
+            <div class="clay-blob blob-1"></div>
+            <div class="clay-blob blob-2"></div>
+        </div>
+    </section>
+
+  @*   <!-- ===== Workflow ===== -->
+    <section id="workflow" class="section">
+        <div class="section-head">
+            <span class="eyebrow">End to end</span>
+            <h2>Three people, one smooth workflow.</h2>
+            <p>Every form moves through the same clean path — from the admin who builds it, to the respondent who fills it, to the system that keeps it all straight.</p>
+        </div>
+
+        <div class="lane-grid">
+            <div class="lane-card clay-card">
+                <span class="lane-tag tag-coral">Admin</span>
+                <ol class="lane-steps">
+                    <li>Log in</li>
+                    <li>Create form</li>
+                    <li>Add questions</li>
+                    <li>Configure settings</li>
+                    <li>Preview</li>
+                    <li>Publish</li>
+                </ol>
+            </div>
+            <div class="lane-card clay-card">
+                <span class="lane-tag tag-sky">Respondent</span>
+                <ol class="lane-steps">
+                    <li>Open assigned form</li>
+                    <li>Fill in answers</li>
+                    <li>Pass validation</li>
+                    <li>Submit</li>
+                    <li>Get confirmation</li>
+                </ol>
+            </div>
+            <div class="lane-card clay-card">
+                <span class="lane-tag tag-mint">System</span>
+                <ol class="lane-steps">
+                    <li>Store response</li>
+                    <li>Update analytics</li>
+                    <li>Write audit log</li>
+                    <li>Close on end date</li>
+                    <li>Generate reports</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Roles ===== -->
+    <section id="roles" class="section section-alt">
+        <div class="section-head">
+            <span class="eyebrow">Access, matched to responsibility</span>
+            <h2>Everyone sees exactly what they need to.</h2>
+        </div>
+
+        <div class="role-grid">
+            <div class="role-card clay-card">
+                <div class="role-icon icon-grape">&#128081;</div>
+                <h3>Super admin</h3>
+                <p>Complete system configuration and access.</p>
+            </div>
+            <div class="role-card clay-card">
+                <div class="role-icon icon-coral">&#9881;</div>
+                <h3>Admin</h3>
+                <p>Builds forms and questions, publishes, reviews responses and reports.</p>
+            </div>
+            <div class="role-card clay-card">
+                <div class="role-icon icon-sky">&#128101;</div>
+                <h3>Department manager</h3>
+                <p>Views feedback for their own department only.</p>
+            </div>
+            <div class="role-card clay-card">
+                <div class="role-icon icon-sun">&#9998;</div>
+                <h3>Respondent</h3>
+                <p>Fills out and submits feedback forms.</p>
+            </div>
+            <div class="role-card clay-card">
+                <div class="role-icon icon-mint">&#128202;</div>
+                <h3>Report viewer</h3>
+                <p>Read-only access to dashboards and reports.</p>
+            </div>
+        </div>
+    </section> *@
+
+    <!-- ===== Question types ===== -->
+    <section id="questions" class="section">
+        <div class="section-head">
+            <span class="eyebrow">Ask it your way</span>
+            <h2>Eight question types, one form builder.</h2>
+        </div>
+
+        <div class="question-grid">
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#11088;</span>5-star rating</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#128202;</span>1–10 rating</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#128280;</span>Single choice</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#9745;</span>Multiple choice</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#128077;</span>Yes / No</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#128316;</span>Dropdown</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#128221;</span>Short text</div>
+            <div class="question-chip clay-chip-static"><span class="q-emoji">&#128196;</span>Long comment</div>
+        </div>
+    </section>
+
+    <!-- ===== Features ===== -->
+    <section id="features" class="section section-alt">
+        <div class="section-head">
+            <span class="eyebrow">What's inside</span>
+            <h2>Everything a feedback cycle needs.</h2>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card clay-card">
+                <div class="feature-icon icon-coral">&#128200;</div>
+                <h3>Dashboard</h3>
+                <p>Total forms, active forms, responses and average rating, at a glance.</p>
+            </div>
+            <div class="feature-card clay-card">
+                <div class="feature-icon icon-sky">&#129504;</div>
+                <h3>Question bank</h3>
+                <p>Reusable questions, organized by category, ready to drop into any form.</p>
+            </div>
+            <div class="feature-card clay-card">
+                <div class="feature-icon icon-mint">&#128274;</div>
+                <h3>Duplicate protection</h3>
+                <p>One-response rules stop the same person from submitting twice.</p>
+            </div>
+            <div class="feature-card clay-card">
+                <div class="feature-icon icon-sun">&#128203;</div>
+                <h3>Reports &amp; export</h3>
+                <p>Filter by form, department or date, then export straight to Excel or PDF.</p>
+            </div>
+            <div class="feature-card clay-card">
+                <div class="feature-icon icon-grape">&#128276;</div>
+                <h3>Notifications</h3>
+                <p>Publication, reminder, submission and closure alerts, sent automatically.</p>
+            </div>
+            <div class="feature-card clay-card">
+                <div class="feature-icon icon-coral">&#128203;</div>
+                <h3>Audit log</h3>
+                <p>Every login and every create, update, publish or export action, tracked.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Final CTA ===== -->
+    <section class="cta-band clay-card">
+        <h2>Ready to put the paper form away?</h2>
+        <p>Set up your first feedback form in minutes. Draft, preview and publish whenever you're ready.</p>
+        <a href="#" class="btn btn-primary btn-lg">Create your first form</a>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <a href="#" class="brand">
+                <span class="brand-mark">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12h4l2-7 4 14 2-7h6" stroke="#33314B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </span>
+                Pulse
+            </a>
+            @* <div class="footer-links">
+                <a href="#workflow">How it works</a>
+                <a href="#roles">Roles</a>
+                <a href="#features">Features</a>
+            </div> *@
+            <p class="footer-copy">&copy; 2026 Pulse Feedback System.</p>
+        </div>
+    </footer>
+
+    <script src="~/js/landing.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+﻿# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+
+# Visual Studio profiling
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# User-specific publish files
+*.publishsettings
+
+# IIS
+*.publishproj
+
+# Certificate/private key files
+*.pfx
+*.p12
+
+# OS files
+.DS_Store
+Thumbs.db

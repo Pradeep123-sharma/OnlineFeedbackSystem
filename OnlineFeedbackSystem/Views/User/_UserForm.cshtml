@@ -1,0 +1,59 @@
+﻿@model OnlineFeedbackSystem.Models.ViewModels.UserViewModel
+
+<div asp-validation-summary="ModelOnly" class="form-error-summary"></div>
+
+<input type="hidden" asp-for="UserId" />
+
+<div class="form-group">
+    <label asp-for="FullName">Full name</label>
+    <input asp-for="FullName" class="clay-input" placeholder="e.g. Priya Nair" />
+    <span asp-validation-for="FullName" class="field-error"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="Email">Email</label>
+    <input asp-for="Email" class="clay-input" placeholder="e.g. priya@example.com" autocomplete="off" />
+    <span asp-validation-for="Email" class="field-error"></span>
+</div>
+
+<div class="form-group">
+    <label asp-for="Password">Temporary password</label>
+    <input asp-for="Password" class="clay-input" placeholder="At least 8 characters" autocomplete="new-password" />
+    <span asp-validation-for="Password" class="field-error"></span>
+</div>
+
+<div class="qb-form-row">
+    <div class="form-group">
+        <label asp-for="RoleId">Role</label>
+        <select asp-for="RoleId" class="clay-select">
+            <option value="">Select a role…</option>
+            @foreach (var role in Model.AvailableRoles)
+            {
+                <option value="@role.RoleId">@role.RoleName</option>
+            }
+        </select>
+        <span asp-validation-for="RoleId" class="field-error"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DepartmentId">Department</label>
+        <select asp-for="DepartmentId" class="clay-select">
+            <option value="">No department</option>
+            @foreach (var dept in Model.AvailableDepartments)
+            {
+                <option value="@dept.DepartmentId">@dept.DepartmentName</option>
+            }
+        </select>
+        <span asp-validation-for="DepartmentId" class="field-error"></span>
+    </div>
+</div>
+
+<div class="form-checkbox-row">
+    <input asp-for="IsActive" type="checkbox" />
+    <label asp-for="IsActive">Active</label>
+</div>
+
+<div class="qb-form-actions">
+    <a asp-controller="User" asp-action="Index" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save user</button>
+</div>

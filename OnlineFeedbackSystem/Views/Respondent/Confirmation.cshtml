@@ -1,0 +1,35 @@
+@model OnlineFeedbackSystem.Models.ViewModels.SubmissionConfirmationViewModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Feedback Submitted — Pulse";
+}
+
+<section class="dash-panel clay-card" style="max-width: 620px; margin: 40px auto; padding: 48px 36px; text-align: center;">
+    <div style="width: 72px; height: 72px; border-radius: 50%; background: #D7F7EC; color: var(--mint-dark); font-size: 36px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: var(--shadow-in);">
+        ✓
+    </div>
+
+    <span class="eyebrow" style="margin-bottom: 6px; display: inline-block;">Submission Confirmed</span>
+    <h1 style="font-size: 28px; color: var(--ink); margin-bottom: 8px;">Thank You!</h1>
+    <p style="color: var(--ink-soft); font-size: 15px; margin-bottom: 24px;">
+        Your response for <strong>@Model.FormTitle</strong> has been safely recorded.
+    </p>
+
+    <!-- Receipt Card -->
+    <div style="background: var(--clay-soft); padding: 22px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-in); margin-bottom: 28px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px;">
+            <span style="color: var(--ink-faint); font-weight: 700;">Reference Token:</span>
+            <strong style="font-family: monospace; font-size: 15px; color: var(--coral-dark);">@Model.SubmissionToken</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px;">
+            <span style="color: var(--ink-faint); font-weight: 700;">Submitted On:</span>
+            <span style="color: var(--ink); font-weight: 700;">@Model.SubmittedAt.ToString("dd MMM yyyy, hh:mm tt")</span>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 14px;">
+        <a asp-controller="Respondent" asp-action="Index" class="btn btn-primary">
+            Browse Other Surveys &rarr;
+        </a>
+    </div>
+</section>

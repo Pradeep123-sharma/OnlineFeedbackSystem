@@ -1,0 +1,341 @@
+@model OnlineFeedbackSystem.Models.ViewModels.RespondentFormFillingViewModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Fill Feedback — " + Model.Title;
+}
+
+@section Styles {
+    <style>
+        .fill-header {
+            border-bottom: 2px dashed #D9DCF0;
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+        }
+
+        .fill-q-card {
+            background: var(--clay-soft, #E9ECF9);
+            border-radius: var(--radius-md, 22px);
+            padding: 24px 28px;
+            margin-bottom: 26px;
+            box-shadow: var(--shadow-in);
+        }
+
+        .fill-q-label {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 16px;
+            display: block;
+            line-height: 1.4;
+        }
+
+        /* 5-Star Clay Interactive Control */
+        .clay-star-rating {
+            display: inline-flex;
+            gap: 12px;
+        }
+
+        .clay-star-btn {
+            font-size: 32px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            filter: grayscale(100%);
+            opacity: 0.4;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .clay-star-btn:hover,
+        .clay-star-btn.active {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        /* 1-10 Rating Scale */
+        .clay-scale-10 {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .clay-scale-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            border: none;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .clay-scale-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .clay-scale-btn.selected {
+            background: #FFEACC;
+            color: #D97706;
+            box-shadow: var(--shadow-in);
+        }
+
+        /* Choice Tiles */
+        .clay-choice-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .clay-choice-tile {
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14.5px;
+            color: var(--ink);
+            transition: all 0.15s ease;
+        }
+
+        .clay-choice-tile:hover {
+            transform: translateY(-1px);
+        }
+
+        .clay-choice-tile input {
+            accent-color: var(--mint-dark);
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Yes/No Pills */
+        .clay-yes-no-grid {
+            display: flex;
+            gap: 16px;
+        }
+
+        .clay-yn-btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            border: none;
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .clay-yn-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .clay-yn-btn.selected-yes {
+            background: #D7F7EC;
+            color: var(--mint-dark);
+            box-shadow: var(--shadow-in);
+        }
+
+        .clay-yn-btn.selected-no {
+            background: #FEE2E2;
+            color: var(--coral-dark);
+            box-shadow: var(--shadow-in);
+        }
+    </style>
+}
+
+<section class="dash-panel clay-card" style="padding: 40px 38px;">
+    <div class="fill-header">
+        <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; align-items:center;">
+            <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
+                @Model.Category
+            </span>
+            @if (!string.IsNullOrEmpty(Model.DepartmentName))
+            {
+                <span class="badge" style="background:#EDE9FE; color:#5B21B6; font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
+                    🏛 @Model.DepartmentName
+                </span>
+            }
+            @if (Model.IsAnonymous)
+            {
+                <span class="badge" style="background:#E0F2FE; color:var(--sky-dark); font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
+                    🕶 Anonymous Submission
+                </span>
+            }
+        </div>
+        <h1 style="font-size: 28px; color: var(--ink); margin-bottom: 8px;">@Model.Title</h1>
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p style="color: var(--ink-soft); font-size: 15px; line-height: 1.5; margin: 0;">@Model.Description</p>
+        }
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="form-error-summary"></div>
+    }
+
+    <form asp-controller="Respondent" asp-action="Submit" method="post" id="feedbackForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="FormId" />
+        <input type="hidden" asp-for="Title" />
+
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+            var q = Model.Questions[i];
+            <div class="fill-q-card">
+                <input type="hidden" name="Questions[@i].QuestionId" value="@q.QuestionId" />
+                <input type="hidden" name="Questions[@i].QuestionType" value="@q.QuestionType" />
+                <input type="hidden" name="Questions[@i].QuestionText" value="@q.QuestionText" />
+                <input type="hidden" name="Questions[@i].IsRequired" value="@q.IsRequired.ToString().ToLower()" />
+
+                <label class="fill-q-label">
+                    @(i + 1). @q.QuestionText
+                    @if (q.IsRequired)
+                    {
+                        <span style="color:var(--coral-dark);">*</span>
+                    }
+                </label>
+
+                @switch (q.QuestionType)
+                {
+                    case "5-Star Rating":
+                        <input type="hidden" name="Questions[@i].NumericAnswer" id="rating5_@i" value="@(q.NumericAnswer?.ToString() ?? "")" />
+                        <div class="clay-star-rating" data-target="rating5_@i">
+                            @for (int s = 1; s <= 5; s++)
+                            {
+                                <button type="button" class="clay-star-btn @(q.NumericAnswer >= s ? "active" : "")" onclick="setStarRating(this, @s, 'rating5_@i')">⭐️</button>
+                            }
+                        </div>
+                        break;
+
+                    case "1-10 Rating":
+                        <input type="hidden" name="Questions[@i].NumericAnswer" id="rating10_@i" value="@(q.NumericAnswer?.ToString() ?? "")" />
+                        <div class="clay-scale-10" data-target="rating10_@i">
+                            @for (int s = 1; s <= 10; s++)
+                            {
+                                <button type="button" class="clay-scale-btn @(q.NumericAnswer == s ? "selected" : "")" onclick="setScaleRating(this, @s, 'rating10_@i')">@s</button>
+                            }
+                        </div>
+                        break;
+
+                    case "Single Choice":
+                        <div class="clay-choice-grid">
+                            @foreach (var opt in q.Options)
+                            {
+                                <label class="clay-choice-tile">
+                                    <input type="radio" name="Questions[@i].TextAnswer" value="@opt" checked="@(q.TextAnswer == opt ? "checked" : null)" />
+                                    <span>@opt</span>
+                                </label>
+                            }
+                        </div>
+                        break;
+
+                    case "Multiple Choice":
+                        <div class="clay-choice-grid">
+                            @foreach (var opt in q.Options)
+                            {
+                                <label class="clay-choice-tile">
+                                    <input type="checkbox" name="Questions[@i].SelectedChoices" value="@opt" checked="@(q.SelectedChoices != null && q.SelectedChoices.Contains(opt) ? "checked" : null)" />
+                                    <span>@opt</span>
+                                </label>
+                            }
+                        </div>
+                        break;
+
+                    case "Yes/No":
+                        <input type="hidden" name="Questions[@i].TextAnswer" id="yesno_@i" value="@q.TextAnswer" />
+                        <div class="clay-yes-no-grid">
+                            <button type="button" class="clay-yn-btn @(q.TextAnswer == "Yes" ? "selected-yes" : "")" onclick="setYesNo(this, 'Yes', 'yesno_@i')">
+                                👍 Yes
+                            </button>
+                            <button type="button" class="clay-yn-btn @(q.TextAnswer == "No" ? "selected-no" : "")" onclick="setYesNo(this, 'No', 'yesno_@i')">
+                                👎 No
+                            </button>
+                        </div>
+                        break;
+
+                    case "Dropdown":
+                        <select name="Questions[@i].TextAnswer" class="clay-select" style="max-width: 440px;">
+                            <option value="">-- Please select an option --</option>
+                            @foreach (var opt in q.Options)
+                            {
+                                <option value="@opt" selected="@(q.TextAnswer == opt ? "selected" : null)">@opt</option>
+                            }
+                        </select>
+                        break;
+
+                    case "Text":
+                        <input type="text" name="Questions[@i].TextAnswer" value="@q.TextAnswer" class="clay-input" placeholder="Type your response here..." />
+                        break;
+
+                    case "Textarea":
+                        <textarea name="Questions[@i].TextAnswer" class="clay-textarea" placeholder="Type your detailed thoughts and feedback here..." rows="4">@q.TextAnswer</textarea>
+                        break;
+
+                    default:
+                        <input type="text" name="Questions[@i].TextAnswer" value="@q.TextAnswer" class="clay-input" />
+                        break;
+                }
+            </div>
+        }
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:32px; flex-wrap:wrap; gap:16px;">
+            <a asp-controller="Respondent" asp-action="Index" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary" style="padding:16px 36px; font-size:16px;">
+                Submit Feedback ✓
+            </button>
+        </div>
+    </form>
+</section>
+
+<script>
+    function setStarRating(btn, val, targetId) {
+        document.getElementById(targetId).value = val;
+        const parent = btn.parentElement;
+        const buttons = parent.querySelectorAll('.clay-star-btn');
+        buttons.forEach((b, idx) => {
+            if (idx < val) {
+                b.classList.add('active');
+            } else {
+                b.classList.remove('active');
+            }
+        });
+    }
+
+    function setScaleRating(btn, val, targetId) {
+        document.getElementById(targetId).value = val;
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.clay-scale-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+    }
+
+    function setYesNo(btn, val, targetId) {
+        document.getElementById(targetId).value = val;
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.clay-yn-btn').forEach(b => {
+            b.classList.remove('selected-yes');
+            b.classList.remove('selected-no');
+        });
+        if (val === 'Yes') {
+            btn.classList.add('selected-yes');
+        } else {
+            btn.classList.add('selected-no');
+        }
+    }
+</script>

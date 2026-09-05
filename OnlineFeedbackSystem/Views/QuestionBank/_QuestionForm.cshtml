@@ -1,0 +1,127 @@
+@model OnlineFeedbackSystem.Models.ViewModels.QuestionCreateEditViewModel
+
+<div asp-validation-summary="ModelOnly" class="form-error-summary"></div>
+
+<div class="form-group">
+    <label asp-for="QuestionText">Question Prompt *</label>
+    <textarea asp-for="QuestionText" class="clay-textarea" placeholder="e.g. How effective was the course instructor in explaining difficult concepts?" rows="3"></textarea>
+    <span asp-validation-for="QuestionText" class="field-error"></span>
+</div>
+
+<div class="qb-form-row">
+    <div class="form-group">
+        <label asp-for="QuestionType">Question Type *</label>
+        <select asp-for="QuestionType" class="clay-select" id="questionTypeSelect">
+            <option value="5-Star Rating">⭐️ 5-Star Rating (1 to 5)</option>
+            <option value="1-10 Rating">🔟 1–10 Scale</option>
+            <option value="Single Choice">🔘 Single Choice (Radio)</option>
+            <option value="Multiple Choice">☑️ Multiple Choice (Checkboxes)</option>
+            <option value="Yes/No">⚖️ Yes / No</option>
+            <option value="Dropdown">🔽 Dropdown Selection</option>
+            <option value="Text">📝 Short Text Answer</option>
+            <option value="Textarea">📄 Long Feedback / Comments</option>
+        </select>
+        <span asp-validation-for="QuestionType" class="field-error"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Category">Category *</label>
+        <input asp-for="Category" class="clay-input" list="categoryPresets" placeholder="e.g. Academic, Facilities, Faculty, Services" />
+        <datalist id="categoryPresets">
+            <option value="Academic" />
+            <option value="Course Content" />
+            <option value="Faculty & Teaching" />
+            <option value="Campus Facilities" />
+            <option value="Student Services" />
+            <option value="General" />
+        </datalist>
+        <span asp-validation-for="Category" class="field-error"></span>
+    </div>
+</div>
+
+<!-- ===== Options Section (Shown only for choices / dropdown) ===== -->
+<div id="optionsSection" class="qb-options-section @(Model.QuestionType == "SingleChoice" || Model.QuestionType == "MultipleChoice" || Model.QuestionType == "Dropdown" ? "" : "qb-hidden")">
+    <label class="qb-options-label">Choice Options</label>
+    <p class="qb-options-hint">Define the options the respondent can choose from.</p>
+
+    <div id="optionsContainer" class="qb-options-list">
+        @if (Model.Options != null && Model.Options.Any())
+        {
+            @for (int i = 0; i < Model.Options.Count; i++)
+            {
+                <div class="qb-option-row">
+                    <input type="text" name="Options" class="clay-input" value="@Model.Options[i]" placeholder="Option @(i + 1)" />
+                    <button type="button" class="qb-option-remove" onclick="removeOptionRow(this)" title="Remove option">&times;</button>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="qb-option-row">
+                <input type="text" name="Options" class="clay-input" placeholder="Option 1" />
+                <button type="button" class="qb-option-remove" onclick="removeOptionRow(this)" title="Remove option">&times;</button>
+            </div>
+            <div class="qb-option-row">
+                <input type="text" name="Options" class="clay-input" placeholder="Option 2" />
+                <button type="button" class="qb-option-remove" onclick="removeOptionRow(this)" title="Remove option">&times;</button>
+            </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-secondary qb-add-option" id="addOptionBtn" onclick="addOptionRow()">+ Add another option</button>
+</div>
+
+<div class="form-checkbox-row">
+    <input asp-for="IsActive" type="checkbox" id="isActiveCheck" />
+    <label for="isActiveCheck">Make this question active and available for forms</label>
+</div>
+
+<div class="qb-form-actions">
+    <a asp-controller="QuestionBank" asp-action="Index" class="btn btn-ghost">Cancel</a>
+    <button type="submit" class="btn btn-primary">Save Question</button>
+</div>
+
+<script>
+    function updateOptionsVisibility() {
+        const typeSelect = document.getElementById('questionTypeSelect');
+        const optionsSection = document.getElementById('optionsSection');
+        const type = typeSelect.value;
+
+        if (type === 'SingleChoice' || type === 'MultipleChoice' || type === 'Dropdown') {
+            optionsSection.classList.remove('qb-hidden');
+        } else {
+            optionsSection.classList.add('qb-hidden');
+        }
+    }
+
+    function addOptionRow() {
+        const container = document.getElementById('optionsContainer');
+        const count = container.querySelectorAll('.qb-option-row').length + 1;
+        const row = document.createElement('div');
+        row.className = 'qb-option-row';
+        row.innerHTML = `
+            <input type="text" name="Options" class="clay-input" placeholder="Option ${count}" />
+            <button type="button" class="qb-option-remove" onclick="removeOptionRow(this)" title="Remove option">&times;</button>
+        `;
+        container.appendChild(row);
+        row.querySelector('input').focus();
+    }
+
+    function removeOptionRow(btn) {
+        const container = document.getElementById('optionsContainer');
+        const rows = container.querySelectorAll('.qb-option-row');
+        if (rows.length > 1) {
+            btn.closest('.qb-option-row').remove();
+        } else {
+            btn.closest('.qb-option-row').querySelector('input').value = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.getElementById('questionTypeSelect');
+        if (typeSelect) {
+            typeSelect.addEventListener('change', updateOptionsVisibility);
+            updateOptionsVisibility();
+        }
+    });
+</script>

@@ -1,0 +1,681 @@
+@model OnlineFeedbackSystem.Models.ViewModels.FormBuilderViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Form Builder — " + Model.Title;
+    ViewData["PageTitle"] = "Form builder";
+    ViewData["PageEyebrow"] = "Admin / Form Design";
+    ViewData["ActiveNav"] = "Forms";
+}
+
+@section Styles {
+    <style>
+        .builder-layout {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .builder-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 18px 24px;
+        }
+
+        .builder-q-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .builder-q-card {
+            background: var(--clay);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-out);
+            padding: 16px 18px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+            position: relative;
+            cursor: grab;
+            border: 2px solid transparent;
+        }
+
+        .builder-q-card:active {
+            cursor: grabbing;
+        }
+
+        .builder-q-card.dragging {
+            opacity: 0.45;
+            transform: scale(0.98);
+            border-color: #D97706;
+            box-shadow: var(--shadow-in);
+        }
+
+        .builder-q-card.drag-over {
+            border-color: var(--mint-dark);
+            background: #EBFDF5;
+            transform: translateY(-2px);
+        }
+
+        .drag-handle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-faint);
+            font-size: 16px;
+            cursor: grab;
+            user-select: none;
+            padding: 4px 2px;
+            border-radius: 4px;
+            transition: color 0.15s ease;
+        }
+
+        .drag-handle:hover {
+            color: var(--ink);
+        }
+
+        .builder-order-badge {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #FFEACC;
+            color: #D97706;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-in);
+        }
+
+        .builder-q-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .builder-q-title {
+            font-weight: 700;
+            font-size: 14.5px;
+            color: var(--ink);
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .builder-q-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .builder-q-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Order Reorder Arrow Buttons */
+        .reorder-btn-group {
+            display: inline-flex;
+            gap: 4px;
+            background: var(--clay-soft);
+            padding: 3px 6px;
+            border-radius: 999px;
+            box-shadow: var(--shadow-in);
+        }
+
+        .reorder-btn {
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            padding: 0;
+        }
+
+        .reorder-btn:hover:not(:disabled) {
+            background: #FFEACC;
+            color: #D97706;
+            transform: scale(1.1);
+        }
+
+        .reorder-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Interactive Required Toggle Button */
+        .req-toggle-btn {
+            border: none;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            box-shadow: var(--shadow-out);
+        }
+
+        .req-toggle-btn.is-required {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .req-toggle-btn.is-required:hover {
+            background: #FECACA;
+            transform: scale(1.03);
+        }
+
+        .req-toggle-btn.is-optional {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+
+        .req-toggle-btn.is-optional:hover {
+            background: #E5E7EB;
+            transform: scale(1.03);
+        }
+
+        .builder-bank-item {
+            background: var(--clay-soft);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .builder-bank-item:hover {
+            box-shadow: var(--shadow-out);
+        }
+
+        .bank-add-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #111827;
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .order-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @@media (max-width: 900px) {
+            .builder-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+}
+
+<!-- ===== Top Action Bar ===== -->
+<div class="dash-panel clay-card builder-header-bar">
+    <div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <h2 style="margin:0;">@Model.Title</h2>
+            <span class="status-badge status-@Model.Status.ToLower()">@Model.Status</span>
+        </div>
+        <div style="font-size:12.5px; color:var(--ink-soft); margin-top:4px;">
+            Category: <strong>@Model.Category</strong>
+            @if (!string.IsNullOrEmpty(Model.DepartmentName))
+            {
+                <span>&bull; Department: <strong style="color:var(--grape-dark);">🏛 @Model.DepartmentName</strong></span>
+            }
+            &bull; Total Questions: <strong id="assignedQCount">@Model.AssignedQuestions.Count</strong>
+        </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a asp-controller="Forms" asp-action="Preview" asp-route-id="@Model.FormId" class="btn btn-secondary btn-sm" target="_blank">
+            👁 Live Preview
+        </a>
+        <a asp-controller="Forms" asp-action="Edit" asp-route-id="@Model.FormId" class="btn btn-ghost btn-sm">
+            ⚙️ Settings
+        </a>
+        @if (Model.Status == "Draft" || Model.Status == "Closed")
+        {
+            <form asp-controller="Forms" asp-action="Publish" asp-route-id="@Model.FormId" method="post" style="display:inline;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-primary btn-sm">
+                    ⚡ Publish Form
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="background:#D7F7EC; color:var(--mint-dark); font-weight:700; font-size:13.5px; padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:18px;">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="field-error" style="margin-bottom: 16px;">@TempData["ErrorMessage"]</div>
+}
+
+<div class="builder-layout">
+
+    <!-- ===== Left Column: Current Form Structure ===== -->
+    <section class="dash-panel clay-card" style="padding: 24px;">
+        <div class="dash-panel-head" style="margin-bottom: 18px;">
+            <div>
+                <h3 style="margin:0; font-size:18px;">Form Structure</h3>
+                <p class="dash-panel-sub" style="margin-top:2px;">Reorder questions using <strong>▲ / ▼</strong> buttons or drag &amp; drop cards directly.</p>
+            </div>
+        </div>
+
+        @if (!Model.AssignedQuestions.Any())
+        {
+            <div style="text-align:center; padding: 40px 10px; background: var(--clay-soft); border-radius: var(--radius-md);">
+                <span style="font-size: 32px; display: block; margin-bottom: 8px;">📝</span>
+                <p class="dash-empty">No questions added to this form yet.</p>
+                <p style="font-size: 12.5px; color: var(--ink-faint);">Pick questions from the Question Bank on the right &rarr;</p>
+            </div>
+        }
+        else
+        {
+            <div class="builder-q-list" id="builderQuestionList">
+                @for (int i = 0; i < Model.AssignedQuestions.Count; i++)
+                {
+                    var q = Model.AssignedQuestions[i];
+                    <div class="builder-q-card" id="qcard-@q.QuestionId" data-question-id="@q.QuestionId" draggable="true">
+                        <div class="drag-handle" title="Drag to reorder">⋮⋮</div>
+                        <div class="builder-order-badge" id="order-badge-@q.QuestionId">@(i + 1)</div>
+
+                        <div class="builder-q-content">
+                            <div class="builder-q-title">@q.QuestionText</div>
+                            
+                            <div class="builder-q-meta">
+                                <span class="badge" style="background:#EDE5FF; color:var(--grape-dark); font-size:11px; padding:2px 8px; border-radius:999px;">
+                                    @q.QuestionType
+                                </span>
+                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11px; padding:2px 8px; border-radius:999px;">
+                                    @q.Category
+                                </span>
+
+                                <!-- Interactive Required Toggle Badge -->
+                                <button type="button" 
+                                        class="req-toggle-btn @(q.IsRequired ? "is-required" : "is-optional")"
+                                        id="req-btn-@q.QuestionId"
+                                        onclick="toggleQuestionRequired(@Model.FormId, @q.QuestionId, @(q.IsRequired ? "false" : "true"))"
+                                        title="Click to toggle Required/Optional">
+                                    <span id="req-icon-@q.QuestionId">@(q.IsRequired ? "★" : "☆")</span>
+                                    <span id="req-text-@q.QuestionId">@(q.IsRequired ? "Required" : "Optional")</span>
+                                </button>
+                            </div>
+
+                            @if (q.Options != null && q.Options.Any())
+                            {
+                                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;">
+                                    @foreach (var opt in q.Options)
+                                    {
+                                        <span style="font-size:11px; background:rgba(255,255,255,0.7); border-radius:4px; padding:2px 6px; color:var(--ink-soft);">@opt</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Action Controls: Up/Down Buttons & Remove -->
+                        <div class="builder-q-actions">
+                            <div class="reorder-btn-group">
+                                <button type="button" 
+                                        class="reorder-btn reorder-btn-up" 
+                                        onclick="moveQuestion(@Model.FormId, @q.QuestionId, 'up')" 
+                                        title="Move question up"
+                                        @(i == 0 ? "disabled" : "")>
+                                    ▲
+                                </button>
+                                <button type="button" 
+                                        class="reorder-btn reorder-btn-down" 
+                                        onclick="moveQuestion(@Model.FormId, @q.QuestionId, 'down')" 
+                                        title="Move question down"
+                                        @(i == Model.AssignedQuestions.Count - 1 ? "disabled" : "")>
+                                    ▼
+                                </button>
+                            </div>
+
+                            <!-- Remove Button -->
+                            <form asp-controller="Forms" asp-action="RemoveQuestion" method="post" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="formId" value="@Model.FormId" />
+                                <input type="hidden" name="questionId" value="@q.QuestionId" />
+                                <button type="submit" class="dash-panel-link" style="color:var(--coral-dark); font-size:11.5px; font-weight:700; background:none; border:none; cursor:pointer;" onclick="return confirm('Remove this question from the form?');">
+                                    ✕ Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <!-- ===== Right Column: Question Bank Picker ===== -->
+    <section class="dash-panel clay-card" style="padding: 24px;">
+        <div class="dash-panel-head" style="margin-bottom: 14px;">
+            <div>
+                <h3 style="margin:0; font-size:18px;">Question Bank</h3>
+                <p class="dash-panel-sub" style="margin-top:2px;">Click <strong>+ Add</strong> to attach to this form.</p>
+            </div>
+            <a asp-controller="QuestionBank" asp-action="Create" target="_blank" class="btn btn-ghost btn-sm">+ New</a>
+        </div>
+
+        <!-- Filter / Search input -->
+        <div class="clay-search-wrapper" style="margin-bottom: 16px;">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" id="bankSearchInput" placeholder="Filter bank questions..." class="clay-input" onkeyup="filterBankQuestions()" />
+        </div>
+
+        @if (!Model.AvailableBankQuestions.Any())
+        {
+            <div style="text-align:center; padding: 24px 10px;">
+                <p class="dash-empty">All available active questions from your Question Bank have been added to this form!</p>
+                <a asp-controller="QuestionBank" asp-action="Create" class="btn btn-primary btn-sm" style="margin-top:10px;">+ Create new question</a>
+            </div>
+        }
+        else
+        {
+            <div id="bankListContainer" style="max-height: 480px; overflow-y: auto; padding-right: 4px;">
+                @foreach (var bankQ in Model.AvailableBankQuestions)
+                {
+                    <div class="builder-bank-item" data-text="@bankQ.QuestionText.ToLower()" data-cat="@bankQ.Category.ToLower()">
+                        <div style="flex:1;">
+                            <div style="font-size:13px; font-weight:700; color:var(--ink); line-height:1.3;">
+                                @bankQ.QuestionText
+                            </div>
+                            <div style="display:flex; gap:6px; margin-top:4px;">
+                                <span style="font-size:10.5px; color:var(--grape-dark); font-weight:700;">@bankQ.QuestionType</span>
+                                <span style="font-size:10.5px; color:var(--ink-faint);">&bull; @bankQ.Category</span>
+                            </div>
+                        </div>
+
+                        <form asp-controller="Forms" asp-action="AddQuestion" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="formId" value="@Model.FormId" />
+                            <input type="hidden" name="questionId" value="@bankQ.Id" />
+                            <div class="bank-add-controls">
+                                <label style="font-size:11px; font-weight:700; color:var(--ink-soft); display:flex; align-items:center; gap:3px; cursor:pointer;" title="Require respondent to answer">
+                                    <input type="checkbox" name="isRequired" value="true" checked /> Req
+                                </label>
+                                <button type="submit" class="btn btn-primary btn-sm" style="padding:6px 12px; font-size:12px;">
+                                    + Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+</div>
+
+<div id="orderToast" class="order-toast">
+    <span>✓</span> <span id="toastMessage">Question order saved!</span>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        const formId = @Model.FormId;
+
+        function showToast(message) {
+            const toast = document.getElementById('orderToast');
+            const msgSpan = document.getElementById('toastMessage');
+            if (!toast) return;
+            if (message) msgSpan.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function updateOrderNumbersAndButtons() {
+            const cards = document.querySelectorAll('#builderQuestionList .builder-q-card');
+            cards.forEach((card, index) => {
+                const badge = card.querySelector('.builder-order-badge');
+                if (badge) badge.textContent = index + 1;
+
+                const upBtn = card.querySelector('.reorder-btn-up');
+                const downBtn = card.querySelector('.reorder-btn-down');
+
+                if (upBtn) upBtn.disabled = (index === 0);
+                if (downBtn) downBtn.disabled = (index === cards.length - 1);
+            });
+        }
+
+        function moveQuestion(fId, qId, direction) {
+            const list = document.getElementById('builderQuestionList');
+            const currentCard = document.getElementById('qcard-' + qId);
+            if (!list || !currentCard) return;
+
+            if (direction === 'up') {
+                const prev = currentCard.previousElementSibling;
+                if (prev) {
+                    list.insertBefore(currentCard, prev);
+                }
+            } else if (direction === 'down') {
+                const next = currentCard.nextElementSibling;
+                if (next) {
+                    list.insertBefore(next, currentCard);
+                }
+            }
+
+            updateOrderNumbersAndButtons();
+            saveCurrentOrder();
+        }
+
+        function saveCurrentOrder() {
+            const cards = document.querySelectorAll('#builderQuestionList .builder-q-card');
+            const orderedQuestionIds = [];
+            cards.forEach(card => {
+                const qId = parseInt(card.getAttribute('data-question-id'));
+                if (!isNaN(qId)) {
+                    orderedQuestionIds.push(qId);
+                }
+            });
+
+            if (orderedQuestionIds.length === 0) return;
+
+            fetch('/Forms/ReorderQuestions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    formId: formId,
+                    orderedQuestionIds: orderedQuestionIds
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success) {
+                    showToast('Question order saved!');
+                } else {
+                    console.error('Could not save order:', data ? data.message : 'Unknown error');
+                }
+            })
+            .catch(err => {
+                console.error('Reorder error:', err);
+            });
+        }
+
+        // --- Drag and Drop Implementation ---
+        let draggedItem = null;
+
+        function setupDragAndDrop() {
+            const list = document.getElementById('builderQuestionList');
+            if (!list) return;
+
+            list.addEventListener('dragstart', (e) => {
+                const targetCard = e.target.closest('.builder-q-card');
+                if (!targetCard) return;
+                draggedItem = targetCard;
+                targetCard.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', targetCard.getAttribute('data-question-id'));
+            });
+
+            list.addEventListener('dragend', (e) => {
+                const targetCard = e.target.closest('.builder-q-card');
+                if (targetCard) targetCard.classList.remove('dragging');
+                document.querySelectorAll('.builder-q-card').forEach(c => c.classList.remove('drag-over'));
+                draggedItem = null;
+                updateOrderNumbersAndButtons();
+                saveCurrentOrder();
+            });
+
+            list.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+
+                const targetCard = e.target.closest('.builder-q-card');
+                if (targetCard && targetCard !== draggedItem) {
+                    const rect = targetCard.getBoundingClientRect();
+                    const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                    list.insertBefore(draggedItem, next && targetCard.nextSibling || targetCard);
+                }
+            });
+
+            list.addEventListener('dragenter', (e) => {
+                const targetCard = e.target.closest('.builder-q-card');
+                if (targetCard && targetCard !== draggedItem) {
+                    targetCard.classList.add('drag-over');
+                }
+            });
+
+            list.addEventListener('dragleave', (e) => {
+                const targetCard = e.target.closest('.builder-q-card');
+                if (targetCard) {
+                    targetCard.classList.remove('drag-over');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDragAndDrop();
+            updateOrderNumbersAndButtons();
+        });
+
+        function filterBankQuestions() {
+            const query = document.getElementById('bankSearchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.builder-bank-item');
+            items.forEach(item => {
+                const text = item.getAttribute('data-text') || '';
+                const cat = item.getAttribute('data-cat') || '';
+                if (text.includes(query) || cat.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleQuestionRequired(fId, questionId, nextIsRequired) {
+            const btn = document.getElementById('req-btn-' + questionId);
+            const icon = document.getElementById('req-icon-' + questionId);
+            const text = document.getElementById('req-text-' + questionId);
+
+            if (!btn) return;
+
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+
+            const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenElement ? tokenElement.value : '';
+
+            const formData = new URLSearchParams();
+            formData.append('formId', fId);
+            formData.append('questionId', questionId);
+            formData.append('isRequired', nextIsRequired);
+            formData.append('__RequestVerificationToken', token);
+
+            fetch('/Forms/ToggleQuestionRequired', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData.toString()
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+
+                if (data && data.success) {
+                    const isReq = data.isRequired;
+                    if (isReq) {
+                        btn.className = 'req-toggle-btn is-required';
+                        icon.textContent = '★';
+                        text.textContent = 'Required';
+                        btn.setAttribute('onclick', 'toggleQuestionRequired(' + fId + ', ' + questionId + ', false)');
+                    } else {
+                        btn.className = 'req-toggle-btn is-optional';
+                        icon.textContent = '☆';
+                        text.textContent = 'Optional';
+                        btn.setAttribute('onclick', 'toggleQuestionRequired(' + fId + ', ' + questionId + ', true)');
+                    }
+                    showToast('Question set to ' + (isReq ? 'Required' : 'Optional'));
+                } else {
+                    alert('Could not update status: ' + (data ? data.message : 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                console.error(err);
+            });
+        }
+    </script>
+}

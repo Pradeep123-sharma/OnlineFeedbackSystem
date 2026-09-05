@@ -1,0 +1,38 @@
+﻿@model List<OnlineFeedbackSystem.Models.ViewModels.RoleListItemViewModel>
+@{
+    Layout = "_DashboardLayout";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/question-bank.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/roles.css" asp-append-version="true" />
+}
+
+<section class="dash-panel clay-card role-panel">
+    <div class="dash-panel-head">
+        <h2>System roles</h2>
+    </div>
+    <p class="dash-panel-sub">
+        Roles are fixed by the system and control what each screen allows —
+        they aren't editable here, since renaming or removing one would break
+        access checks throughout the app.
+    </p>
+
+    <table class="dash-table role-table">
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Responsibilities</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in Model)
+            {
+                <tr>
+                    <td><span class="type-pill">@role.RoleName</span></td>
+                    <td class="role-desc">@role.Responsibility</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>

@@ -1,0 +1,206 @@
+/* ==========================================================
+   Pulse — Question Bank styles
+   Link landing.css + dashboard.css + forms.css BEFORE this file.
+   ========================================================== */
+
+.qb-panel {
+    padding: 26px 24px;
+}
+
+.qb-success {
+    background: #D7F7EC;
+    color: var(--mint-dark);
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 18px;
+}
+
+/* ---- Table fixes: prevent overflow ---- */
+.qb-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.qb-table th:nth-child(1),
+.qb-table td:nth-child(1) { width: 38%; }
+
+.qb-table th:nth-child(2),
+.qb-table td:nth-child(2) { width: 16%; }
+
+.qb-table th:nth-child(3),
+.qb-table td:nth-child(3) { width: 16%; }
+
+.qb-table th:nth-child(4),
+.qb-table td:nth-child(4) { width: 10%; }
+
+.qb-table th:nth-child(5),
+.qb-table td:nth-child(5) { width: 20%; }
+
+.qb-question-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.type-pill {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    background: #EDE5FF;
+    color: var(--grape-dark);
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+/* Actions cell: flex wrap so buttons stay inside */
+.qb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+}
+
+.qb-inline-form {
+    display: inline;
+}
+
+.qb-action-link {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--sky-dark);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.qb-action-danger {
+    color: var(--coral-dark);
+}
+
+/* Options preview inside question cell */
+.qb-options-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.qb-opt-badge {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: #EAEBF7;
+    color: var(--ink-soft);
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Category tag */
+.qb-category-tag {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    word-break: break-word;
+}
+
+/* ---------- Form ---------- */
+.qb-form-panel {
+    padding: 32px clamp(20px, 4vw, 40px);
+    max-width: 720px;
+}
+
+.qb-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.qb-options-section {
+    background: var(--clay-soft);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+    .qb-options-section.qb-hidden {
+        display: none;
+    }
+
+.qb-options-label {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.qb-options-hint {
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+}
+
+.qb-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.qb-option-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+    .qb-option-row .clay-input {
+        flex: 1;
+    }
+
+.qb-option-remove {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: none;
+    background: var(--clay);
+    box-shadow: var(--shadow-out);
+    color: var(--coral-dark);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+    .qb-option-remove:hover {
+        transform: translateY(-1px);
+    }
+
+.qb-add-option {
+    font-size: 13.5px;
+}
+
+.qb-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+    .qb-form-row {
+        grid-template-columns: 1fr;
+    }
+}

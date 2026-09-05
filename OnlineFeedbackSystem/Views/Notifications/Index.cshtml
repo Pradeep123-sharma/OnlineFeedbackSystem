@@ -1,0 +1,199 @@
+﻿@model OnlineFeedbackSystem.Models.ViewModels.NotificationIndexViewModel
+@{
+    bool isSuperAdmin = User.IsInRole("SuperAdmin");
+    Layout = isSuperAdmin ? "_DashboardLayout" : "_AdminLayout";
+    ViewData["Title"] = "Notifications — Pulse";
+    ViewData["PageTitle"] = "Notifications & Alerts";
+    ViewData["PageEyebrow"] = isSuperAdmin ? "Super Admin / System" : "Admin / Preferences";
+    ViewData["ActiveNav"] = "Notifications";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/notifications.css" asp-append-version="true" />
+}
+
+<!-- ===== Alerts & Success Messages ===== -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="notif-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="field-error">@TempData["ErrorMessage"]</div>
+}
+
+<!-- ===== Top KPI Summary Cards ===== -->
+<section class="notif-summary-grid">
+    <div class="notif-stat-card clay-card">
+        <span class="notif-stat-icon icon-sky">&#128276;</span>
+        <div class="notif-stat-info">
+            <span class="notif-stat-num">@Model.TotalCount</span>
+            <span class="notif-stat-lbl">Total alerts</span>
+        </div>
+    </div>
+    <div class="notif-stat-card clay-card">
+        <span class="notif-stat-icon icon-amber">&#9889;</span>
+        <div class="notif-stat-info">
+            <span class="notif-stat-num">@Model.UnreadCount</span>
+            <span class="notif-stat-lbl">Unread notices</span>
+        </div>
+    </div>
+    <div class="notif-stat-card clay-card">
+        <span class="notif-stat-icon icon-mint">&#128172;</span>
+        <div class="notif-stat-info">
+            <span class="notif-stat-num">@Model.SubmissionCount</span>
+            <span class="notif-stat-lbl">Submissions</span>
+        </div>
+    </div>
+    <div class="notif-stat-card clay-card">
+        <span class="notif-stat-icon icon-coral">&#9888;&#65039;</span>
+        <div class="notif-stat-info">
+            <span class="notif-stat-num">@Model.AlertCount</span>
+            <span class="notif-stat-lbl">Low rating warnings</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Quick Simulator Box for Live Demo & Testing ===== -->
+<div class="test-generator-box">
+    <span class="test-gen-label">&#10024; Simulate Real-time Event:</span>
+    <form asp-controller="Notifications" asp-action="CreateTest" method="post" style="display:inline-flex; gap:8px; flex-wrap:wrap;">
+        @Html.AntiForgeryToken()
+        <button type="submit" name="type" value="Submission" class="btn-icon-sm" title="Simulate a new user feedback submission">&#128172; + Submission</button>
+        <button type="submit" name="type" value="LowRating" class="btn-icon-sm" title="Simulate a critical low-rating alert">&#9888;&#65039; + Low Rating Alert</button>
+        <button type="submit" name="type" value="Publication" class="btn-icon-sm" title="Simulate form published alert">&#9889; + Form Published</button>
+        <button type="submit" name="type" value="Closure" class="btn-icon-sm" title="Simulate form deadline closure">&#128274; + Form Closed</button>
+        <button type="submit" name="type" value="System" class="btn-icon-sm" title="Simulate system maintenance notice">&#9881; + System Notice</button>
+    </form>
+</div>
+
+<!-- ===== Main Notifications Panel ===== -->
+<section class="dash-panel clay-card" style="padding: 28px 26px;">
+
+    <!-- Toolbar: Filter Tabs & Bulk Actions -->
+    <div class="notif-toolbar">
+        <div class="notif-tabs">
+            <a asp-controller="Notifications" asp-action="Index" asp-route-filter="All" class="notif-tab @(Model.SelectedFilter == "All" ? "active" : "")">
+                All <span class="notif-pill-count">@Model.TotalCount</span>
+            </a>
+            <a asp-controller="Notifications" asp-action="Index" asp-route-filter="Unread" class="notif-tab @(Model.SelectedFilter == "Unread" ? "active" : "")">
+                Unread <span class="notif-pill-count">@Model.UnreadCount</span>
+            </a>
+            <a asp-controller="Notifications" asp-action="Index" asp-route-filter="Submission" class="notif-tab @(Model.SelectedFilter == "Submission" ? "active" : "")">
+                &#128172; Submissions
+            </a>
+            <a asp-controller="Notifications" asp-action="Index" asp-route-filter="LowRating" class="notif-tab @(Model.SelectedFilter == "LowRating" ? "active" : "")">
+                &#9888;&#65039; Low Rating
+            </a>
+            <a asp-controller="Notifications" asp-action="Index" asp-route-filter="Publication" class="notif-tab @(Model.SelectedFilter == "Publication" ? "active" : "")">
+                &#9889; Form Updates
+            </a>
+            <a asp-controller="Notifications" asp-action="Index" asp-route-filter="System" class="notif-tab @(Model.SelectedFilter == "System" ? "active" : "")">
+                &#9881; System
+            </a>
+        </div>
+
+        <div class="notif-actions">
+            @if (Model.UnreadCount > 0)
+            {
+                <form asp-controller="Notifications" asp-action="MarkAllAsRead" method="post" style="display:inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnFilter" value="@Model.SelectedFilter" />
+                    <button type="submit" class="btn btn-ghost" style="padding: 8px 18px; font-size:13px;">
+                        &#10003; Mark all as read
+                    </button>
+                </form>
+            }
+
+            @if (Model.Notifications.Any(n => n.IsRead))
+            {
+                <form asp-controller="Notifications" asp-action="ClearAllRead" method="post" style="display:inline;" onsubmit="return confirm('Clear all read notifications?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnFilter" value="@Model.SelectedFilter" />
+                    <button type="submit" class="btn-icon-sm" style="padding: 8px 14px;">
+                        &#128465; Clear read
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+
+    <!-- Notification Item Cards -->
+    @if (Model.Notifications.Count == 0)
+    {
+        <div class="notif-empty">
+            <div class="emoji">&#127881;</div>
+            <h3>All caught up!</h3>
+            <p>There are no notifications matching your current filter.</p>
+        </div>
+    }
+    else
+    {
+        <div class="notif-list">
+            @foreach (var notif in Model.Notifications)
+            {
+                <div class="notif-card clay-card @(!notif.IsRead ? "unread" : "")">
+                    <!-- Icon badge -->
+                    <div class="notif-icon-badge @notif.IconColorClass">
+                        @notif.TypeEmoji
+                    </div>
+
+                    <!-- Content -->
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title-row">
+                                @if (!notif.IsRead)
+                                {
+                                    <span class="unread-dot" title="Unread notification"></span>
+                                }
+                                <h4 class="notif-title">
+                                    @((notif.Message?.Length > 80) ? notif.Message.Substring(0, 80) + "…" : notif.Message)
+                                </h4>
+                                <span class="notif-tag tag-@notif.Type.ToLower()">@notif.Type</span>
+                                @if (!string.IsNullOrEmpty(notif.FormTitle))
+                                {
+                                    <span class="badge">&#128203; @notif.FormTitle</span>
+                                }
+                            </div>
+                            <span class="notif-time">@notif.TimeAgo</span>
+                        </div>
+
+                        <p class="notif-message">@notif.Message</p>
+
+                        <div class="notif-footer">
+                            <span></span>
+
+                            <div class="notif-item-actions">
+                                @if (!notif.IsRead)
+                                {
+                                    <form asp-controller="Notifications" asp-action="MarkAsRead" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@notif.Id" />
+                                        <input type="hidden" name="returnFilter" value="@Model.SelectedFilter" />
+                                        <button type="submit" class="btn-icon-sm" title="Mark this notification as read">
+                                            &#10003; Mark read
+                                        </button>
+                                    </form>
+                                }
+
+                                <form asp-controller="Notifications" asp-action="Delete" method="post" style="display:inline;" onsubmit="return confirm('Remove this notification?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@notif.Id" />
+                                    <input type="hidden" name="returnFilter" value="@Model.SelectedFilter" />
+                                    <button type="submit" class="btn-icon-sm" style="color:var(--coral-dark);" title="Delete notification">
+                                        &#128465;
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+</section>
+
+@section Scripts {
+    <script src="~/js/notifications.js" asp-append-version="true"></script>
+}

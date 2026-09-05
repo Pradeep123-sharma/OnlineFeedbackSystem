@@ -1,0 +1,624 @@
+@model OnlineFeedbackSystem.Models.ViewModels.RespondentDashboardViewModel
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Respondent Dashboard — Pulse";
+}
+
+@section Styles {
+    <style>
+        .resp-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Welcome Banner */
+        .resp-hero {
+            padding: 32px clamp(24px, 4vw, 40px);
+            background: var(--clay, #F2F4FC);
+            border-radius: var(--radius-lg, 24px);
+            box-shadow: 8px 8px 22px rgba(166, 175, 195, 0.5), -8px -8px 22px rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resp-hero::after {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(91, 33, 182, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .resp-hero-title {
+            font-family: var(--font-display, 'Fredoka', sans-serif);
+            font-size: clamp(24px, 3.5vw, 32px);
+            font-weight: 600;
+            color: var(--ink, #33314B);
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .resp-hero-sub {
+            font-size: 14.5px;
+            color: var(--ink-soft, #55536E);
+            margin: 0;
+            max-width: 580px;
+            line-height: 1.55;
+        }
+
+        /* Stat Grid */
+        .resp-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .resp-stat-card {
+            padding: 24px;
+            border-radius: var(--radius-md, 20px);
+            background: var(--clay, #F2F4FC);
+            box-shadow: 6px 6px 16px rgba(166, 175, 195, 0.45), -6px -6px 16px rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .resp-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 20px rgba(166, 175, 195, 0.5), -8px -8px 20px rgba(255, 255, 255, 1);
+        }
+
+        .resp-stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-in);
+        }
+
+        .resp-icon-sky { background: #E0F2FE; }
+        .resp-icon-mint { background: #D7F7EC; }
+        .resp-icon-amber { background: #FEF3C7; }
+
+        .resp-stat-num {
+            font-family: var(--font-display, 'Fredoka', sans-serif);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--ink, #33314B);
+            line-height: 1.1;
+        }
+
+        .resp-stat-lbl {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--ink-faint, #8684A3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Filter Toolbar */
+        .resp-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .resp-search-box {
+            position: relative;
+            flex: 1;
+            min-width: 260px;
+            max-width: 440px;
+        }
+
+        .resp-cat-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .cat-pill {
+            padding: 7px 15px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            background: var(--clay-soft, #EAEBF7);
+            box-shadow: var(--shadow-out);
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+        }
+
+        .cat-pill:hover {
+            color: var(--ink);
+            transform: translateY(-1px);
+        }
+
+        .cat-pill.active {
+            background: #FFEACC;
+            color: #D97706;
+            box-shadow: var(--shadow-in);
+        }
+
+        /* Survey Cards Grid */
+        .resp-survey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 22px;
+        }
+
+        .resp-survey-card {
+            padding: 26px;
+            border-radius: var(--radius-md, 22px);
+            background: var(--clay, #F2F4FC);
+            box-shadow: 6px 6px 16px rgba(166, 175, 195, 0.45), -6px -6px 16px rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+            position: relative;
+        }
+
+        .resp-survey-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 8px 8px 22px rgba(166, 175, 195, 0.55), -8px -8px 22px rgba(255, 255, 255, 1);
+        }
+
+        .resp-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 10px;
+        }
+
+        .resp-cat-badge {
+            font-size: 11.5px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: #EDE5FF;
+            color: var(--grape-dark, #5B21B6);
+            white-space: nowrap;
+        }
+
+        .resp-survey-title {
+            font-family: var(--font-display, 'Fredoka', sans-serif);
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--ink, #33314B);
+            margin: 0 0 10px;
+            line-height: 1.35;
+        }
+
+        .resp-survey-desc {
+            font-size: 13.5px;
+            color: var(--ink-soft, #55536E);
+            line-height: 1.55;
+            margin: 0 0 18px;
+            flex: 1;
+        }
+
+        .resp-survey-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 12.5px;
+            color: var(--ink-faint, #8684A3);
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .deadline-badge {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .deadline-urgent {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .deadline-normal {
+            background: var(--clay-soft, #EAEBF7);
+            color: var(--ink-soft, #55536E);
+        }
+
+        .resp-card-action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 16px;
+        }
+
+        /* History Table */
+        .history-panel {
+            padding: 26px;
+            border-radius: var(--radius-md, 22px);
+            background: var(--clay, #F2F4FC);
+            box-shadow: 6px 6px 16px rgba(166, 175, 195, 0.45), -6px -6px 16px rgba(255, 255, 255, 0.95);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th {
+            text-align: left;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--ink-faint, #8684A3);
+            padding: 12px 16px;
+            border-bottom: 1.5px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .history-table td {
+            padding: 16px;
+            font-size: 13.5px;
+            color: var(--ink, #33314B);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .token-copy-btn {
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s ease;
+        }
+
+        .token-copy-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .guest-banner {
+            padding: 22px 26px;
+            background: #EDE5FF;
+            border-radius: 18px;
+            box-shadow: var(--shadow-out);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+    </style>
+}
+
+<div class="resp-dashboard">
+
+    <!-- ===== Welcome Hero ===== -->
+    <div class="resp-hero">
+        <div>
+            <h1 class="resp-hero-title">
+                @(Model.IsAuthenticated ? $"Welcome back, {Model.RespondentName}! 👋" : "Institutional Feedback Portal 📝")
+            </h1>
+            <p class="resp-hero-sub">
+                Browse active institutional surveys, share confidential and constructive ratings, and monitor your submitted response receipts.
+            </p>
+        </div>
+        <div>
+            @if (Model.IsAuthenticated)
+            {
+                <span class="badge" style="background:#D7F7EC; color:#065F46; font-size:13px; font-weight:800; padding:9px 18px; border-radius:999px; display:inline-flex; align-items:center; gap:6px; box-shadow:var(--shadow-in);">
+                    ✓ Verified Respondent
+                </span>
+            }
+            else
+            {
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm">Create Account</a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-secondary btn-sm">Sign in</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- ===== Flash Messages ===== -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="background:#FEE2E2; color:#DC2626; font-weight:700; font-size:13.5px; padding:14px 18px; border-radius:14px; box-shadow:0 2px 8px rgba(220,38,38,0.15);">
+            ⚠️ @TempData["ErrorMessage"]
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background:#D7F7EC; color:#065F46; font-weight:700; font-size:13.5px; padding:14px 18px; border-radius:14px; box-shadow:0 2px 8px rgba(6,95,70,0.15);">
+            ✓ @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- ===== KPI Stat Cards ===== -->
+    <div class="resp-stats-grid">
+        <div class="resp-stat-card">
+            <div class="resp-stat-icon resp-icon-sky">📋</div>
+            <div>
+                <div class="resp-stat-num">@Model.TotalAvailableSurveys</div>
+                <div class="resp-stat-lbl">Available Surveys</div>
+            </div>
+        </div>
+        <div class="resp-stat-card">
+            <div class="resp-stat-icon resp-icon-mint">✅</div>
+            <div>
+                <div class="resp-stat-num">@Model.CompletedSurveys</div>
+                <div class="resp-stat-lbl">Completed Submissions</div>
+            </div>
+        </div>
+        <div class="resp-stat-card">
+            <div class="resp-stat-icon resp-icon-amber">⏱️</div>
+            <div>
+                <div class="resp-stat-num">@Model.PendingSurveys</div>
+                <div class="resp-stat-lbl">Pending Action</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Guest Callout Banner ===== -->
+    @if (!Model.IsAuthenticated)
+    {
+        <div class="guest-banner">
+            <div>
+                <strong style="color:var(--grape-dark, #5B21B6); font-size:15px; display:block;">Want to track and reference your feedback submissions?</strong>
+                <span style="font-size:13px; color:var(--ink-soft, #55536E);">Sign up for a respondent account to keep record tokens and view your submission history.</span>
+            </div>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm">Register Free &rarr;</a>
+        </div>
+    }
+
+    <!-- ===== Available Surveys Section ===== -->
+    <section>
+        <div class="resp-toolbar">
+            <div>
+                <h2 style="font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--ink); margin:0;">Active Feedback Forms</h2>
+                <span style="font-size:12.5px; color:var(--ink-soft);">Select a survey below to begin answering questions.</span>
+            </div>
+
+            <!-- Search Filter Input -->
+            <div class="clay-search-wrapper resp-search-box">
+                <span class="search-icon">&#128269;</span>
+                <input type="text" id="surveySearchInput" placeholder="Search forms by title or category..." class="clay-input" onkeyup="filterSurveys()" />
+            </div>
+        </div>
+
+        <!-- Category Filter Pills -->
+        @{
+            var distinctCategories = Model.AvailableForms.Select(f => f.Category).Distinct().OrderBy(c => c).ToList();
+        }
+        @if (distinctCategories.Any())
+        {
+            <div class="resp-cat-pills" style="margin-bottom: 20px;">
+                <button type="button" class="cat-pill active" onclick="filterByCategory('all', this)">All Categories (@Model.AvailableForms.Count)</button>
+                @foreach (var cat in distinctCategories)
+                {
+                    int count = Model.AvailableForms.Count(f => f.Category == cat);
+                    <button type="button" class="cat-pill" onclick="filterByCategory('@cat.ToLower()', this)">@cat (@count)</button>
+                }
+            </div>
+        }
+
+        @if (Model.AvailableForms.Count == 0)
+        {
+            <div class="history-panel" style="text-align:center; padding:56px 20px;">
+                <span style="font-size:44px; display:block; margin-bottom:12px;">🎉</span>
+                <h3 style="font-family:var(--font-display); color:var(--ink); margin:0 0 8px;">No active surveys right now</h3>
+                <p style="font-size:13.5px; color:var(--ink-soft); margin:0; max-width:440px; margin:0 auto;">All feedback cycles are currently closed. Check back soon when new institutional surveys are published.</p>
+            </div>
+        }
+        else
+        {
+            <div class="resp-survey-grid" id="surveyGridContainer">
+                @foreach (var form in Model.AvailableForms)
+                {
+                    int daysLeft = (form.EndDate.Date - DateTime.Today).Days;
+                    string deadlineText = daysLeft < 0 ? "Expired" : (daysLeft == 0 ? "Ends today!" : $"{daysLeft} days left");
+                    string deadlineClass = daysLeft <= 2 ? "deadline-urgent" : "deadline-normal";
+
+                    <div class="resp-survey-card" data-title="@form.Title.ToLower()" data-desc="@((form.Description ?? "").ToLower())" data-category="@form.Category.ToLower()">
+                        <div>
+                            <div class="resp-card-top">
+                                <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                                    <span class="resp-cat-badge">@form.Category</span>
+                                    @if (!string.IsNullOrEmpty(form.DepartmentName))
+                                    {
+                                        <span class="resp-cat-badge" style="background:#EDE9FE; color:#5B21B6;">🏛 @form.DepartmentName</span>
+                                    }
+                                </div>
+                                @if (form.IsAnonymous)
+                                {
+                                    <span style="font-size:11.5px; font-weight:800; color:#B45309; background:#FEF3C7; padding:3px 10px; border-radius:999px;">🔒 Anonymous</span>
+                                }
+                            </div>
+                            <h3 class="resp-survey-title">@form.Title</h3>
+                            <p class="resp-survey-desc">
+                                @(string.IsNullOrWhiteSpace(form.Description) ? "Share your feedback to help us evaluate and improve institutional performance." : form.Description)
+                            </p>
+                        </div>
+
+                        <div>
+                            <div class="resp-survey-meta">
+                                <span>📝 @form.QuestionCount questions</span>
+                                <span class="deadline-badge @deadlineClass">⏳ @deadlineText</span>
+                            </div>
+
+                            <div class="resp-card-action">
+                                @if (form.AlreadySubmitted)
+                                {
+                                    <span style="color:#065F46; font-weight:800; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+                                        ✓ Completed
+                                    </span>
+                                    <span style="font-size:12px; color:var(--ink-faint);">Response recorded</span>
+                                }
+                                else
+                                {
+                                    <span style="font-size:12.5px; color:var(--ink-soft); font-weight:700;">Active Form</span>
+                                    <a asp-controller="Respondent" asp-action="Fill" asp-route-id="@form.Id" class="btn btn-primary btn-sm">
+                                        Start Survey &rarr;
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Empty filter result container -->
+            <div id="noSurveyFilterResults" style="display:none; text-align:center; padding:48px 20px; background:var(--clay-soft); border-radius:var(--radius-md); margin-top:12px;">
+                <span style="font-size:32px; display:block; margin-bottom:8px;">🔍</span>
+                <p class="dash-empty">No surveys match your filter.</p>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="resetFilters()">Reset Search Filters</button>
+            </div>
+        }
+    </section>
+
+    <!-- ===== Submission History Section (Logged-in only) ===== -->
+    @if (Model.IsAuthenticated && Model.RecentSubmissions.Count > 0)
+    {
+        <section>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h2 style="font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--ink); margin:0;">My Submission History</h2>
+                <span style="font-size:13px; font-weight:700; color:var(--ink-faint);">@Model.RecentSubmissions.Count recorded</span>
+            </div>
+
+            <div class="history-panel">
+                <div style="overflow-x:auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Survey Title</th>
+                                <th>Category</th>
+                                <th>Submitted Date</th>
+                                <th>Confirmation Token</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sub in Model.RecentSubmissions)
+                            {
+                                <tr>
+                                    <td><strong>@sub.FormTitle</strong></td>
+                                    <td><span class="resp-cat-badge" style="font-size:11px;">@sub.Category</span></td>
+                                    <td style="color:var(--ink-soft); font-size:13px;">@sub.SubmittedAt.ToString("dd MMM yyyy, hh:mm tt")</td>
+                                    <td>
+                                        <button type="button" class="token-copy-btn" onclick="copyToken('@sub.SubmissionToken', this)" title="Click to copy confirmation token">
+                                            <span>@(sub.SubmissionToken.Length > 16 ? sub.SubmissionToken.Substring(0, 16) + "..." : sub.SubmissionToken)</span>
+                                            <span style="font-size:11px; opacity:0.7;">📋</span>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background:#D7F7EC; color:#065F46; font-size:11.5px; font-weight:800; padding:4px 12px; border-radius:999px;">
+                                            ✓ Recorded
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    }
+
+</div>
+
+@section Scripts {
+    <script>
+        let currentSelectedCategory = 'all';
+
+        function filterSurveys() {
+            const query = (document.getElementById('surveySearchInput')?.value || '').toLowerCase().trim();
+            const cards = document.querySelectorAll('.resp-survey-card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title') || '';
+                const desc = card.getAttribute('data-desc') || '';
+                const cat = card.getAttribute('data-category') || '';
+
+                const matchesQuery = !query || title.includes(query) || desc.includes(query) || cat.includes(query);
+                const matchesCategory = currentSelectedCategory === 'all' || cat === currentSelectedCategory;
+
+                if (matchesQuery && matchesCategory) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noSurveyFilterResults');
+            if (noResults) {
+                noResults.style.display = visibleCount === 0 && cards.length > 0 ? 'block' : 'none';
+            }
+        }
+
+        function filterByCategory(category, btn) {
+            currentSelectedCategory = category;
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            filterSurveys();
+        }
+
+        function resetFilters() {
+            const searchInput = document.getElementById('surveySearchInput');
+            if (searchInput) searchInput.value = '';
+            currentSelectedCategory = 'all';
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            const allBtn = document.querySelector('.cat-pill');
+            if (allBtn) allBtn.classList.add('active');
+            filterSurveys();
+        }
+
+        function copyToken(token, btn) {
+            if (!token) return;
+            navigator.clipboard.writeText(token).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<span style="color:#065F46; font-weight:700;">Copied! ✓</span>';
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                }, 2000);
+            }).catch(() => {
+                alert('Token: ' + token);
+            });
+        }
+    </script>
+}

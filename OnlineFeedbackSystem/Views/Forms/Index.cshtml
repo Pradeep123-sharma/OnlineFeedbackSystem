@@ -1,0 +1,225 @@
+@model OnlineFeedbackSystem.Models.ViewModels.FeedbackFormIndexViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Feedback Forms — Pulse";
+    ViewData["PageTitle"] = "Feedback forms";
+    ViewData["PageEyebrow"] = "Admin / Form Management";
+    ViewData["ActiveNav"] = "Forms";
+}
+
+@section Styles {
+    <style>
+        .forms-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .form-status-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+        .status-tab {
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ink-soft);
+            background: var(--clay-soft);
+            box-shadow: var(--shadow-out);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .status-tab:hover {
+            color: var(--ink);
+            transform: translateY(-1px);
+        }
+        .status-tab.active {
+            background: #FFEACC;
+            color: #D97706;
+            box-shadow: var(--shadow-in);
+        }
+        .form-meta-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #EDE5FF;
+            color: var(--grape-dark);
+            display: inline-block;
+        }
+    </style>
+}
+
+<section class="dash-panel clay-card" style="padding: 26px 24px;">
+    <div class="dash-panel-head">
+        <div>
+            <h2>All Feedback Forms</h2>
+            <p class="dash-panel-sub" style="margin-top:4px;">Create, design, publish, and monitor feedback forms.</p>
+        </div>
+        <a asp-controller="Forms" asp-action="Create" class="btn btn-primary btn-sm">+ Create new form</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background:#D7F7EC; color:var(--mint-dark); font-weight:700; font-size:13.5px; padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:18px;">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="field-error" style="margin-bottom: 16px;">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- Status Tabs -->
+    <div class="form-status-tabs">
+        <a asp-controller="Forms" asp-action="Index" class="status-tab @(string.IsNullOrEmpty(Model.SelectedStatus) ? "active" : "")">All Forms</a>
+        <a asp-controller="Forms" asp-action="Index" asp-route-status="Draft" class="status-tab @(Model.SelectedStatus == "Draft" ? "active" : "")">📝 Drafts</a>
+        <a asp-controller="Forms" asp-action="Index" asp-route-status="Published" class="status-tab @(Model.SelectedStatus == "Published" ? "active" : "")">⚡ Published</a>
+        <a asp-controller="Forms" asp-action="Index" asp-route-status="Closed" class="status-tab @(Model.SelectedStatus == "Closed" ? "active" : "")">🔒 Closed</a>
+        <a asp-controller="Forms" asp-action="Index" asp-route-status="Archived" class="status-tab @(Model.SelectedStatus == "Archived" ? "active" : "")">📦 Archived</a>
+    </div>
+
+    <!-- Search & Filter Form (Claymorphic Toolbar) -->
+    <form method="get" asp-controller="Forms" asp-action="Index" class="forms-filters">
+        <input type="hidden" name="status" value="@Model.SelectedStatus" />
+        
+        <div class="clay-search-wrapper">
+            <span class="search-icon">&#128269;</span>
+            <input type="text" name="search" value="@Model.SearchQuery" placeholder="Search forms by title or description..." class="clay-input" />
+        </div>
+
+        <select name="category" class="clay-select" style="min-width:160px; max-width:200px;" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            @foreach (var cat in Model.Categories)
+            {
+                <option value="@cat" selected="@(Model.SelectedCategory == cat ? "selected" : null)">@cat</option>
+            }
+        </select>
+
+        <select name="departmentId" class="clay-select" style="min-width:180px; max-width:220px;" onchange="this.form.submit()">
+            <option value="">All Departments</option>
+            @foreach (var dept in Model.Departments)
+            {
+                <option value="@dept.DepartmentId" selected="@(Model.SelectedDepartmentId == dept.DepartmentId ? "selected" : null)">🏛 @dept.DepartmentName</option>
+            }
+        </select>
+
+        <button type="submit" class="btn btn-secondary btn-sm" style="padding:10px 20px;">Filter</button>
+        @if (!string.IsNullOrEmpty(Model.SearchQuery) || !string.IsNullOrEmpty(Model.SelectedCategory) || !string.IsNullOrEmpty(Model.SelectedStatus) || Model.SelectedDepartmentId.HasValue)
+        {
+            <a asp-controller="Forms" asp-action="Index" class="dash-panel-link" style="margin-left: 6px; font-weight:700; font-size:13px;">Clear filters</a>
+        }
+    </form>
+
+    @if (!Model.Forms.Any())
+    {
+        <div style="text-align: center; padding: 40px 20px;">
+            <span style="font-size: 38px; display: block; margin-bottom: 10px;">&#128203;</span>
+            <p class="dash-empty">No feedback forms found for the selected criteria.</p>
+            <a asp-controller="Forms" asp-action="Create" class="btn btn-primary btn-sm" style="margin-top: 12px;">+ Create a feedback form</a>
+        </div>
+    }
+    else
+    {
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>Form details</th>
+                    <th>Category &amp; Department</th>
+                    <th>Timeline</th>
+                    <th>Questions</th>
+                    <th>Responses</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var form in Model.Forms)
+                {
+                    <tr>
+                        <td style="max-width: 280px;">
+                            <strong>@form.Title</strong>
+                            @if (!string.IsNullOrEmpty(form.Description))
+                            {
+                                <div style="font-size: 12px; color: var(--ink-soft); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@form.Description</div>
+                            }
+                            <div style="margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap;">
+                                @if (form.IsAnonymous)
+                                {
+                                    <span class="form-meta-tag" style="background:#E0F2FE; color:var(--sky-dark);">🕶 Anonymous</span>
+                                }
+                                @if (form.OneResponseOnly)
+                                {
+                                    <span class="form-meta-tag" style="background:#FEF3C7; color:#B45309;">1-Response limit</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@form.Category</span>
+                                @if (!string.IsNullOrEmpty(form.DepartmentName))
+                                {
+                                    <span class="badge" style="background:#EDE9FE; color:#5B21B6; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px;">🏛 @form.DepartmentName</span>
+                                }
+                            </div>
+                        </td>
+                        <td style="font-size: 12.5px;">
+                            @form.StartDate.ToString("dd MMM yyyy")<br />
+                            <span style="color:var(--ink-faint); font-size:11px;">to @form.EndDate.ToString("dd MMM yyyy")</span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:var(--clay-soft); color:var(--ink); font-weight:700; padding:4px 10px; border-radius:999px;">
+                                @form.QuestionCount Qs
+                            </span>
+                        </td>
+                        <td>
+                            <strong>@form.ResponseCount</strong>
+                        </td>
+                        <td>
+                            <span class="status-badge status-@form.Status.ToLower()">@form.Status</span>
+                        </td>
+                        <td>
+                            <div style="display:flex; flex-direction:column; gap:6px;">
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <a asp-controller="Forms" asp-action="Builder" asp-route-id="@form.Id" class="dash-panel-link" style="font-weight:700; font-size:13px;" title="Design form questions">Builder</a>
+                                    <a asp-controller="Forms" asp-action="Preview" asp-route-id="@form.Id" class="dash-panel-link" style="color:var(--sky-dark); font-weight:700; font-size:13px;" title="Preview form as respondent">Preview</a>
+                                    <a asp-controller="Forms" asp-action="Edit" asp-route-id="@form.Id" class="dash-panel-link" style="color:var(--ink-soft); font-weight:700; font-size:13px;">Settings</a>
+                                </div>
+                                <div style="display:flex; gap:8px; align-items:center;">
+                                    @if (form.Status == "Draft" || form.Status == "Closed")
+                                    {
+                                        <form asp-controller="Forms" asp-action="Publish" asp-route-id="@form.Id" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dash-panel-link" style="color:var(--mint-dark); font-weight:700; font-size:12px; background:none; border:none; cursor:pointer; padding:0;">
+                                                ⚡ Publish
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (form.Status == "Published")
+                                    {
+                                        <form asp-controller="Forms" asp-action="Close" asp-route-id="@form.Id" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="dash-panel-link" style="color:var(--coral-dark); font-weight:700; font-size:12px; background:none; border:none; cursor:pointer; padding:0;">
+                                                🔒 Close
+                                            </button>
+                                        </form>
+                                    }
+                                    <form asp-controller="Forms" asp-action="Delete" asp-route-id="@form.Id" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="dash-panel-link" style="color:var(--coral-dark); font-weight:700; font-size:12px; background:none; border:none; cursor:pointer; padding:0;" onclick="return confirm('Are you sure you want to delete this form?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</section>

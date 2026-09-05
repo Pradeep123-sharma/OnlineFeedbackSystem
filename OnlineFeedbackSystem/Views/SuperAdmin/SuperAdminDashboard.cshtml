@@ -1,0 +1,124 @@
+@model OnlineFeedbackSystem.Models.ViewModels.DashboardStatsViewModel
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Dashboard — Pulse";
+    ViewData["PageTitle"] = "System overview";
+    ViewData["ActiveNav"] = "Dashboard";
+}
+
+<!-- ===== Stat cards ===== -->
+<section class="dash-stats-grid">
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-coral">&#128203;</span>
+        <span class="dash-stat-num">@Model.TotalForms</span>
+        <span class="dash-stat-label">Total forms</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-mint">&#9889;</span>
+        <span class="dash-stat-num">@Model.ActiveForms</span>
+        <span class="dash-stat-label">Active forms</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-sky">&#128172;</span>
+        <span class="dash-stat-num">@Model.TotalResponses</span>
+        <span class="dash-stat-label">Total responses</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-sun">&#11088;</span>
+        <span class="dash-stat-num">@Model.AverageRating.ToString("0.0")</span>
+        <span class="dash-stat-label">Average rating</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-grape">&#128101;</span>
+        <span class="dash-stat-num">@Model.TotalUsers</span>
+        <span class="dash-stat-label">Active users</span>
+    </div>
+    <div class="dash-stat-card clay-card">
+        <span class="dash-stat-icon icon-coral">&#127970;</span>
+        <span class="dash-stat-num">@Model.TotalDepartments</span>
+        <span class="dash-stat-label">Departments</span>
+    </div>
+</section>
+
+<div class="dash-lower-grid">
+
+    <!-- ===== Recent users ===== -->
+    <section class="dash-panel clay-card">
+        <div class="dash-panel-head">
+            <h2>Recent users</h2>
+            <a asp-controller="User" asp-action="Index" class="dash-panel-link">View all</a>
+        </div>
+
+        @if (Model.RecentUsers.Count == 0)
+        {
+            <p class="dash-empty">No users registered yet. Once users are added, they'll show up here.</p>
+        }
+        else
+        {
+            <table class="dash-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Joined</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.RecentUsers)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@user.FullName</strong>
+                                <div style="font-size: 11px; color: var(--ink-faint); margin-top:2px;">@user.Email</div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@user.RoleName</span>
+                            </td>
+                            <td>@(string.IsNullOrEmpty(user.DepartmentName) ? "Unassigned" : user.DepartmentName)</td>
+                            <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <span class="status-badge @(user.IsActive ? "status-published" : "status-closed")">
+                                    @(user.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <!-- ===== Quick actions (Super Admin exclusive) ===== -->
+    <section class="dash-panel clay-card">
+        <div class="dash-panel-head">
+            <h2>System configuration</h2>
+        </div>
+        <p class="dash-panel-sub">Areas only a Super Admin can reach.</p>
+
+        <div class="quick-action-list">
+            <a asp-controller="User" asp-action="Index" class="quick-action">
+                <span class="q-emoji">&#128101;</span>
+                <span>Manage users</span>
+            </a>
+            <a asp-controller="Role" asp-action="Index" class="quick-action">
+                <span class="q-emoji">&#128273;</span>
+                <span>Roles &amp; permissions</span>
+            </a>
+            <a asp-controller="Department" asp-action="Index" class="quick-action">
+                <span class="q-emoji">&#127970;</span>
+                <span>Departments</span>
+            </a>
+            <a asp-controller="AuditLogs" asp-action="Index" class="quick-action">
+                <span class="q-emoji">&#128203;</span>
+                <span>Audit logs</span>
+            </a>
+            <a href="/Settings" class="quick-action">
+                <span class="q-emoji">&#9881;</span>
+                <span>System settings</span>
+            </a>
+        </div>
+    </section>
+
+</div>

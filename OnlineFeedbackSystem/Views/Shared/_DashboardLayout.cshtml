@@ -1,0 +1,199 @@
+@inject OnlineFeedbackSystem.Repositories.INotificationsRepository NotificationsRepo
+@{
+    string activeNav = ViewData["ActiveNav"] as string ?? string.Empty;
+    string pageEyebrow = ViewData["PageEyebrow"] as string ?? "Super admin";
+
+    string NavClass(string key) => key == activeNav ? "dash-nav-link active" : "dash-nav-link";
+
+    int? currentUserId = null;
+    var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (idClaim != null && int.TryParse(idClaim.Value, out int parsedId))
+    {
+        currentUserId = parsedId;
+    }
+    int unreadCount = 0;
+    try
+    {
+        unreadCount = NotificationsRepo.GetUnreadCount(currentUserId);
+    }
+    catch { }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+    <style>
+        .brand-mark {
+            width: 36px !important;
+            height: 36px !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
+            max-width: 36px !important;
+            max-height: 36px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 10px !important;
+            background: var(--clay, #F2F4FC) !important;
+            box-shadow: 3px 3px 7px rgba(166, 175, 195, 0.5), -3px -3px 7px rgba(255, 255, 255, 0.9) !important;
+            flex-shrink: 0 !important;
+        }
+        .brand-mark svg {
+            width: 20px !important;
+            height: 20px !important;
+            max-width: 20px !important;
+            max-height: 20px !important;
+            display: block !important;
+        }
+        .notif-bell-chip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            background: var(--clay, #F2F4FC);
+            box-shadow: 6px 6px 14px rgba(166, 175, 195, 0.55), -6px -6px 14px rgba(255, 255, 255, 0.95);
+            color: var(--ink);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .notif-bell-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 10px rgba(166, 175, 195, 0.6), -4px -4px 10px rgba(255, 255, 255, 1);
+        }
+        .notif-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: #EF4444;
+            color: #ffffff;
+            font-size: 10.5px;
+            font-weight: 800;
+            border-radius: 999px;
+            min-width: 19px;
+            height: 19px;
+            padding: 0 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
+            border: 2px solid #FFFFFF;
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="dash-body">
+
+    <div class="dash-shell">
+
+        <!-- ===== Sidebar (SuperAdmin dashboard) ===== -->
+        <aside class="dash-sidebar">
+            <a href="/" class="brand dash-brand">
+                <span class="brand-mark" style="width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;">
+                    <svg style="width:20px; height:20px; max-width:20px; max-height:20px;" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12h4l2-7 4 14 2-7h6" stroke="#33314B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </span>
+                Pulse
+            </a>
+
+            <nav class="dash-nav">
+                <span class="dash-nav-label">Overview</span>
+                <a asp-controller="SuperAdminDashboard" asp-action="Dashboard" class='@NavClass("Dashboard")'>
+                    <span class="nav-emoji">&#128200;</span> Dashboard
+                </a>
+
+                <span class="dash-nav-label">System configuration</span>
+                <a asp-controller="User" asp-action="Index" class='@NavClass("Users")'>
+                    <span class="nav-emoji">&#128101;</span> Users
+                </a>
+                <a asp-controller="Role" asp-action="Index" class='@NavClass("Roles")'>
+                    <span class="nav-emoji">&#128273;</span> Roles &amp; Permissions
+                </a>
+                <a asp-controller="Department" asp-action="Index" class='@NavClass("Departments")'>
+                    <span class="nav-emoji">&#127970;</span> Departments
+                </a>
+
+                <span class="dash-nav-label">System</span>
+                <a asp-controller="Notifications" asp-action="Index" class='@NavClass("Notifications")'>
+                    <span class="nav-emoji">&#128276;</span> Notifications
+                    <span class="notif-badge-sidebar" style="display:@(unreadCount > 0 ? "inline-flex" : "none"); margin-left:auto; background:#EF4444; color:#ffffff; font-size:10px; font-weight:800; border-radius:999px; min-width:18px; height:18px; padding:0 5px; align-items:center; justify-content:center;">
+                        @(unreadCount > 99 ? "99+" : unreadCount.ToString())
+                    </span>
+                </a>
+                <a href="/AuditLogs" class='@NavClass("AuditLogs")'>
+                    <span class="nav-emoji">&#128203;</span> Audit Logs
+                </a>
+                <a asp-controller="Settings" asp-action="Index" class='@NavClass("Settings")'>
+                    <span class="nav-emoji">&#9881;</span> Settings
+                </a>
+            </nav>
+
+            <form asp-controller="Account" asp-action="Logout" method="post" class="dash-logout-form">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-ghost dash-logout-btn">Log out</button>
+            </form>
+        </aside>
+
+        <!-- ===== Main content ===== -->
+        <div class="dash-main">
+
+            <header class="dash-topbar">
+                <div>
+                    <span class="eyebrow">@pageEyebrow</span>
+                    <h1>@ViewData["PageTitle"]</h1>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <a asp-controller="Notifications" asp-action="Index" class="notif-bell-chip" title="Notifications">
+                        <span style="font-size:19px; line-height:1;">&#128276;</span>
+                        <span class="notif-badge" style="display:@(unreadCount > 0 ? "inline-flex" : "none");">
+                            @(unreadCount > 99 ? "99+" : unreadCount.ToString())
+                        </span>
+                    </a>
+                    <div class="dash-user-chip clay-chip-static">
+                        <span class="q-emoji">&#128081;</span> @(User.Identity?.Name ?? "System Administrator")
+                    </div>
+                </div>
+            </header>
+
+            @RenderBody()
+
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function updateUnreadBadge() {
+                fetch('/Notifications/GetUnreadCount')
+                    .then(r => r.json())
+                    .then(data => {
+                        const badges = document.querySelectorAll('.notif-badge, .notif-badge-sidebar');
+                        badges.forEach(badge => {
+                            if (data && data.count > 0) {
+                                badge.textContent = data.count > 99 ? '99+' : data.count;
+                                badge.style.display = 'inline-flex';
+                            } else {
+                                badge.style.display = 'none';
+                            }
+                        });
+                    })
+                    .catch(() => {});
+            }
+            setInterval(updateUnreadBadge, 25000);
+        })();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false);
+</body>
+</html>
+

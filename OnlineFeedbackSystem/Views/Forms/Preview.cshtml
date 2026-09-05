@@ -1,0 +1,329 @@
+@model OnlineFeedbackSystem.Models.ViewModels.FormBuilderViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Preview Form — " + Model.Title;
+    ViewData["PageTitle"] = "Form preview";
+    ViewData["PageEyebrow"] = "Admin / Respondent Simulator";
+    ViewData["ActiveNav"] = "Forms";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
+    <style>
+        .preview-shell {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .preview-banner {
+            background: #EDE5FF;
+            color: var(--grape-dark);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 13.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .preview-form-card {
+            padding: 36px 38px;
+            margin-bottom: 24px;
+        }
+
+        .preview-q-card {
+            background: var(--clay-soft);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            margin-bottom: 22px;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .preview-q-label {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        /* 5-Star Clay Interactive Control */
+        .clay-star-rating {
+            display: inline-flex;
+            gap: 10px;
+        }
+
+        .clay-star-btn {
+            font-size: 26px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            transition: all 0.15s ease;
+        }
+
+        .clay-star-btn:hover,
+        .clay-star-btn.active {
+            filter: grayscale(0%);
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        /* 1-10 Rating Scale */
+        .clay-scale-10 {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .clay-scale-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            border: none;
+            font-weight: 800;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.12s ease;
+        }
+
+        .clay-scale-btn:hover {
+            background: #FFEACC;
+            color: #D97706;
+            transform: translateY(-2px);
+        }
+
+        /* Choice Tiles */
+        .clay-choice-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .clay-choice-tile {
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--ink);
+        }
+
+        .clay-choice-tile input {
+            accent-color: var(--mint-dark);
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Yes/No Pills */
+        .clay-yes-no-grid {
+            display: flex;
+            gap: 16px;
+        }
+
+        .clay-yn-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            background: var(--clay);
+            box-shadow: var(--shadow-out);
+            border: none;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .clay-yn-btn:hover {
+            background: #D7F7EC;
+            color: var(--mint-dark);
+            transform: translateY(-2px);
+        }
+    </style>
+}
+
+<div class="preview-shell">
+
+    <div class="preview-banner">
+        <span>👁 You are currently viewing a live interactive preview of this form as respondents will see it.</span>
+        <a asp-controller="Forms" asp-action="Builder" asp-route-id="@Model.FormId" class="btn btn-secondary btn-sm" style="padding:4px 12px; font-size:12px;">Back to Builder</a>
+    </div>
+
+    <section class="dash-panel clay-card preview-form-card">
+        <header style="border-bottom: 2px dashed #E5E7EB; padding-bottom: 20px; margin-bottom: 28px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div>
+                    <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px; flex-wrap:wrap;">
+                        <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
+                            @Model.Category
+                        </span>
+                        @if (!string.IsNullOrEmpty(Model.DepartmentName))
+                        {
+                            <span class="badge" style="background:#EDE9FE; color:#5B21B6; font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px;">
+                                🏛 @Model.DepartmentName
+                            </span>
+                        }
+                    </div>
+                    <h1 style="font-size: 26px; margin:0 0 8px 0; color:var(--ink);">@Model.Title</h1>
+                </div>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <p style="color:var(--ink-soft); font-size:14.5px; line-height:1.5; margin:0;">@Model.Description</p>
+            }
+        </header>
+
+        @if (!Model.AssignedQuestions.Any())
+        {
+            <div style="text-align:center; padding: 40px 10px;">
+                <p class="dash-empty">This form does not have any questions yet.</p>
+                <a asp-controller="Forms" asp-action="Builder" asp-route-id="@Model.FormId" class="btn btn-primary btn-sm" style="margin-top:12px;">+ Open Builder to add questions</a>
+            </div>
+        }
+        else
+        {
+            <form onsubmit="event.preventDefault(); alert('This is a preview simulation.');">
+                @for (int i = 0; i < Model.AssignedQuestions.Count; i++)
+                {
+                    var q = Model.AssignedQuestions[i];
+                    <div class="preview-q-card">
+                        <label class="preview-q-label">
+                            @(i + 1). @q.QuestionText
+                            @if (q.IsRequired)
+                            {
+                                <span style="color:var(--coral-dark);">*</span>
+                            }
+                        </label>
+
+                        @switch (q.QuestionType)
+                        {
+                            case "5-Star Rating":
+                                <div class="clay-star-rating">
+                                    <button type="button" class="clay-star-btn" onclick="setStar(this, 1)">⭐️</button>
+                                    <button type="button" class="clay-star-btn" onclick="setStar(this, 2)">⭐️</button>
+                                    <button type="button" class="clay-star-btn" onclick="setStar(this, 3)">⭐️</button>
+                                    <button type="button" class="clay-star-btn" onclick="setStar(this, 4)">⭐️</button>
+                                    <button type="button" class="clay-star-btn" onclick="setStar(this, 5)">⭐️</button>
+                                </div>
+                                break;
+
+                            case "1-10 Rating":
+                                <div class="clay-scale-10">
+                                    @for (int n = 1; n <= 10; n++)
+                                    {
+                                        <button type="button" class="clay-scale-btn" onclick="setScale(this)">@n</button>
+                                    }
+                                </div>
+                                break;
+
+                            case "Single Choice":
+                                <div class="clay-choice-grid">
+                                    @foreach (var opt in q.Options)
+                                    {
+                                        <label class="clay-choice-tile">
+                                            <input type="radio" name="q_@q.QuestionId" />
+                                            <span>@opt</span>
+                                        </label>
+                                    }
+                                </div>
+                                break;
+
+                            case "Multiple Choice":
+                                <div class="clay-choice-grid">
+                                    @foreach (var opt in q.Options)
+                                    {
+                                        <label class="clay-choice-tile">
+                                            <input type="checkbox" name="q_@q.QuestionId" />
+                                            <span>@opt</span>
+                                        </label>
+                                    }
+                                </div>
+                                break;
+
+                            case "Yes/No":
+                                <div class="clay-yes-no-grid">
+                                    <button type="button" class="clay-yn-btn" onclick="setYN(this)">👍 Yes</button>
+                                    <button type="button" class="clay-yn-btn" onclick="setYN(this)">👎 No</button>
+                                </div>
+                                break;
+
+                            case "Dropdown":
+                                <select class="clay-select" style="max-width: 380px;">
+                                    <option value="">-- Please select an option --</option>
+                                    @foreach (var opt in q.Options)
+                                    {
+                                        <option value="@opt">@opt</option>
+                                    }
+                                </select>
+                                break;
+
+                            case "Text":
+                                <input type="text" class="clay-input" placeholder="Type your answer here..." />
+                                break;
+
+                            case "Textarea":
+                                <textarea class="clay-textarea" placeholder="Type your detailed feedback here..." rows="4"></textarea>
+                                break;
+
+                            default:
+                                <input type="text" class="clay-input" />
+                                break;
+                        }
+                    </div>
+                }
+
+                <div style="display:flex; justify-content:flex-end; margin-top:28px;">
+                    <button type="submit" class="btn btn-primary" style="padding:14px 32px; font-size:16px;">
+                        Submit Feedback (Preview)
+                    </button>
+                </div>
+            </form>
+        }
+    </section>
+
+</div>
+
+<script>
+    function setStar(btn, val) {
+        const parent = btn.parentElement;
+        const buttons = parent.querySelectorAll('.clay-star-btn');
+        buttons.forEach((b, idx) => {
+            if (idx < val) {
+                b.classList.add('active');
+            } else {
+                b.classList.remove('active');
+            }
+        });
+    }
+
+    function setScale(btn) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.clay-scale-btn').forEach(b => {
+            b.style.background = 'var(--clay)';
+            b.style.color = 'var(--ink)';
+        });
+        btn.style.background = '#FFEACC';
+        btn.style.color = '#D97706';
+    }
+
+    function setYN(btn) {
+        const parent = btn.parentElement;
+        parent.querySelectorAll('.clay-yn-btn').forEach(b => {
+            b.style.background = 'var(--clay)';
+            b.style.color = 'var(--ink)';
+        });
+        btn.style.background = '#D7F7EC';
+        btn.style.color = 'var(--mint-dark)';
+    }
+</script>

@@ -1,0 +1,76 @@
+@model OnlineFeedbackSystem.Models.ViewModels.ResponseDetailViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Response Detail — " + Model.SubmissionToken;
+    ViewData["PageTitle"] = "Response inspection";
+    ViewData["PageEyebrow"] = "Admin / Review Portal";
+    ViewData["ActiveNav"] = "Responses";
+}
+
+<section class="dash-panel clay-card" style="max-width: 800px; margin: 0 auto; padding: 36px 32px;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:2px dashed #D9DCF0; padding-bottom:20px; flex-wrap:wrap; gap:14px;">
+        <div>
+            <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; display:inline-block; margin-bottom:6px;">
+                @Model.Category
+            </span>
+            <h2 style="font-size: 24px; margin:0 0 6px 0; color:var(--ink);">@Model.FormTitle</h2>
+            <div style="font-size: 13px; color: var(--ink-soft);">
+                Respondent: <strong>@(Model.IsAnonymous ? "Anonymous Respondent" : Model.RespondentName)</strong> &bull;
+                Submitted: <strong>@Model.SubmittedAt.ToString("dd MMM yyyy, hh:mm tt")</strong>
+            </div>
+        </div>
+        <div>
+            <span style="font-family:monospace; background:var(--clay-soft); padding:6px 12px; border-radius:var(--radius-sm); font-weight:800; color:var(--coral-dark); font-size:14px; box-shadow:var(--shadow-in);">
+                @Model.SubmissionToken
+            </span>
+        </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 28px;">
+        @for (int i = 0; i < Model.Answers.Count; i++)
+        {
+            var a = Model.Answers[i];
+            <div class="clay-card" style="background: var(--clay-soft); padding: 18px 22px; border-radius: var(--radius-sm);">
+                <div style="font-size: 14.5px; font-weight: 800; color: var(--ink); margin-bottom: 8px;">
+                    @(i + 1). @a.QuestionText
+                </div>
+                <div>
+                    @if (a.QuestionType == "Rating5")
+                    {
+                        <div style="font-size: 20px; color: #D97706;">
+                            @for (int s = 1; s <= (int)(a.NumericValue ?? 0); s++)
+                            {
+                                <span>⭐️</span>
+                            }
+                            <span style="font-size: 13px; font-weight: 800; color: var(--ink-soft); margin-left: 8px;">(@a.NumericValue / 5.0)</span>
+                        </div>
+                    }
+                    else if (a.QuestionType == "Rating10")
+                    {
+                        <span style="display: inline-block; padding: 4px 12px; background: #FFEACC; color: #D97706; font-weight: 800; border-radius: 999px; font-size: 13.5px;">
+                            Score: @a.NumericValue / 10
+                        </span>
+                    }
+                    else if (a.QuestionType == "YesNo")
+                    {
+                        <span style="display: inline-block; padding: 4px 14px; background: @(a.AnswerText == "Yes" ? "#D7F7EC" : "#FEE2E2"); color: @(a.AnswerText == "Yes" ? "var(--mint-dark)" : "var(--coral-dark)"); font-weight: 800; border-radius: 999px; font-size: 13px;">
+                            @(a.AnswerText == "Yes" ? "👍 Yes" : "👎 No")
+                        </span>
+                    }
+                    else
+                    {
+                        <div style="font-size: 14px; color: var(--ink); background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; line-height: 1.4;">
+                            @(string.IsNullOrEmpty(a.AnswerText) ? "(No answer provided)" : a.AnswerText)
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div style="display: flex; justify-content: flex-end;">
+        <a asp-controller="Responses" asp-action="Index" class="btn btn-secondary">
+            &larr; Back to Responses List
+        </a>
+    </div>
+</section>
