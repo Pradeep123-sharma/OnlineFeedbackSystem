@@ -7,6 +7,10 @@
     ViewData["ActiveNav"] = "Analytics";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/analytics.css" asp-append-version="true" />
+}
+
 <section class="dash-panel clay-card" style="padding: 26px 24px;">
     <div class="dash-panel-head">
         <div>
@@ -25,50 +29,52 @@
     }
     else
     {
-        <table class="dash-table">
-            <thead>
-                <tr>
-                    <th>Form Title</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Responses</th>
-                    <th>Questions</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var form in Model.Forms)
-                {
+        <div class="table-responsive">
+            <table class="dash-table">
+                <thead>
                     <tr>
-                        <td>
-                            <strong>@form.Title</strong>
-                            <div style="font-size:11.5px; color:var(--ink-faint); margin-top:2px;">
-                                @form.StartDate.ToString("dd MMM yyyy") &ndash; @form.EndDate.ToString("dd MMM yyyy")
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@form.Category</span>
-                        </td>
-                        <td>
-                            <span class="status-badge status-@form.Status.ToLower()">@form.Status</span>
-                        </td>
-                        <td>
-                            <strong>@form.ResponseCount</strong>
-                        </td>
-                        <td>@form.QuestionCount</td>
-                        <td>
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <a asp-controller="Analytics" asp-action="Form" asp-route-id="@form.Id" class="btn btn-primary btn-sm" style="padding:6px 14px; font-size:12.5px;">
-                                    📊 Analytics
-                                </a>
-                                <a asp-controller="Analytics" asp-action="Export" asp-route-id="@form.Id" class="btn btn-secondary btn-sm" style="padding:6px 12px; font-size:12px;" title="Export responses to CSV">
-                                    📥 CSV
-                                </a>
-                            </div>
-                        </td>
+                        <th>Form Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Responses</th>
+                        <th>Questions</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var form in Model.Forms)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@form.Title</strong>
+                                <div style="font-size:11.5px; color:var(--ink-faint); margin-top:2px;">
+                                    @form.StartDate.ToString("dd MMM yyyy") &ndash; @form.EndDate.ToString("dd MMM yyyy")
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@form.Category</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-@form.Status.ToLower()">@form.Status</span>
+                            </td>
+                            <td>
+                                <strong>@form.ResponseCount</strong>
+                            </td>
+                            <td>@form.QuestionCount</td>
+                            <td>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <a asp-controller="Analytics" asp-action="Form" asp-route-id="@form.Id" class="btn btn-primary btn-sm" style="padding:6px 14px; font-size:12.5px;">
+                                        📊 Analytics
+                                    </a>
+                                    <a asp-controller="Analytics" asp-action="Export" asp-route-id="@form.Id" class="btn btn-secondary btn-sm" style="padding:6px 12px; font-size:12px;" title="Export responses to CSV">
+                                        📥 CSV
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </section>

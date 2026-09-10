@@ -55,38 +55,40 @@
         }
         else
         {
-            <table class="dash-table">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Role</th>
-                        <th>Department</th>
-                        <th>Joined</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var user in Model.RecentUsers)
-                    {
+            <div class="table-responsive">
+                <table class="dash-table">
+                    <thead>
                         <tr>
-                            <td>
-                                <strong>@user.FullName</strong>
-                                <div style="font-size: 11px; color: var(--ink-faint); margin-top:2px;">@user.Email</div>
-                            </td>
-                            <td>
-                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@user.RoleName</span>
-                            </td>
-                            <td>@(string.IsNullOrEmpty(user.DepartmentName) ? "Unassigned" : user.DepartmentName)</td>
-                            <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
-                            <td>
-                                <span class="status-badge @(user.IsActive ? "status-published" : "status-closed")">
-                                    @(user.IsActive ? "Active" : "Inactive")
-                                </span>
-                            </td>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Joined</th>
+                            <th>Status</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.RecentUsers)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@user.FullName</strong>
+                                    <div style="font-size: 11px; color: var(--ink-faint); margin-top:2px;">@user.Email</div>
+                                </td>
+                                <td>
+                                    <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@user.RoleName</span>
+                                </td>
+                                <td>@(string.IsNullOrEmpty(user.DepartmentName) ? "Unassigned" : user.DepartmentName)</td>
+                                <td>@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="status-badge @(user.IsActive ? "status-published" : "status-closed")">
+                                        @(user.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </section>
 

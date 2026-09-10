@@ -7,8 +7,12 @@
     ViewData["ActiveNav"] = "Responses";
 }
 
-<section class="dash-panel clay-card" style="max-width: 800px; margin: 0 auto; padding: 36px 32px;">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:2px dashed #D9DCF0; padding-bottom:20px; flex-wrap:wrap; gap:14px;">
+@section Styles {
+    <link rel="stylesheet" href="~/css/responses.css" asp-append-version="true" />
+}
+
+<section class="dash-panel clay-card resp-detail-shell">
+    <div class="resp-detail-header">
         <div>
             <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; display:inline-block; margin-bottom:6px;">
                 @Model.Category
@@ -20,7 +24,7 @@
             </div>
         </div>
         <div>
-            <span style="font-family:monospace; background:var(--clay-soft); padding:6px 12px; border-radius:var(--radius-sm); font-weight:800; color:var(--coral-dark); font-size:14px; box-shadow:var(--shadow-in);">
+            <span class="resp-detail-token">
                 @Model.SubmissionToken
             </span>
         </div>
@@ -30,7 +34,7 @@
         @for (int i = 0; i < Model.Answers.Count; i++)
         {
             var a = Model.Answers[i];
-            <div class="clay-card" style="background: var(--clay-soft); padding: 18px 22px; border-radius: var(--radius-sm);">
+            <div class="clay-card resp-answer-card">
                 <div style="font-size: 14.5px; font-weight: 800; color: var(--ink); margin-bottom: 8px;">
                     @(i + 1). @a.QuestionText
                 </div>
@@ -59,7 +63,7 @@
                     }
                     else
                     {
-                        <div style="font-size: 14px; color: var(--ink); background: rgba(255,255,255,0.7); padding: 10px 14px; border-radius: 10px; line-height: 1.4;">
+                        <div class="resp-answer-text">
                             @(string.IsNullOrEmpty(a.AnswerText) ? "(No answer provided)" : a.AnswerText)
                         </div>
                     }

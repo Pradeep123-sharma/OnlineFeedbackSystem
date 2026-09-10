@@ -1,40 +1,80 @@
-﻿/* ==========================================================
-   Pulse — Departments styles
-   Reuses .dash-table, .status-badge, .qb-action-link, .qb-form-panel,
-   .qb-form-actions from dashboard.css / question-bank.css.
-   Link those + forms.css BEFORE this file.
+/* ==========================================================
+   Pulse — Departments Styles
    ========================================================== */
 
 .dept-panel {
     padding: 26px 24px;
 }
 
-.dept-success {
-    background: #D7F7EC;
-    color: var(--mint-dark);
-    font-weight: 700;
-    font-size: 13.5px;
-    padding: 12px 16px;
-    border-radius: var(--radius-sm);
-    margin-bottom: 18px;
+.dept-table {
+    width: 100%;
+    min-width: 500px;
 }
 
-.dept-name {
-    font-weight: 800;
-}
-
-.dept-no-manager {
-    color: var(--ink-faint);
-    font-style: italic;
-    font-size: 13.5px;
-}
-
-.dept-actions {
+.dept-actions-wrap {
     display: flex;
-    gap: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
     align-items: center;
 }
 
-.dept-table th:last-child, .dept-table td:last-child {
-    width: 140px;
+.btn-action-edit {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--sky-dark);
+    background: #E0F2FE;
+    border: none;
+    cursor: pointer;
+    padding: 5px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.btn-action-edit:hover {
+    background: #BAE6FD;
+    color: var(--sky-dark);
+}
+
+.btn-action-deactivate {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--coral-dark);
+    background: #FEE2E2;
+    border: none;
+    cursor: pointer;
+    padding: 5px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.btn-action-deactivate:hover {
+    background: #FECACA;
+}
+
+.btn-action-activate {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--mint-dark);
+    background: #D7F7EC;
+    border: none;
+    cursor: pointer;
+    padding: 5px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.btn-action-activate:hover {
+    background: #A7F3D0;
+}
+
+.dept-form-shell {
+    max-width: 600px;
+    margin: 0 auto;
 }

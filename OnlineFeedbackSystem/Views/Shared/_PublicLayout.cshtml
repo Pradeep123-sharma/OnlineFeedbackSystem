@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,40 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
-    <style>
-        .public-shell {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg, #EAEDFB);
-        }
-        .public-header {
-            padding: 16px clamp(20px, 4vw, 40px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--clay, #F2F4FC);
-            box-shadow: 0 4px 14px rgba(159,163,204,0.15);
-        }
-        .public-nav-links {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .public-main {
-            flex: 1;
-            padding: 40px clamp(16px, 4vw, 40px) 60px;
-            max-width: 860px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .public-footer {
-            text-align: center;
-            padding: 24px;
-            font-size: 13px;
-            color: var(--ink-faint);
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/respondent.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="dash-body">

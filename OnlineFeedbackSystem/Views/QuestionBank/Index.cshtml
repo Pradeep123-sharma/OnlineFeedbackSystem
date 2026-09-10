@@ -9,46 +9,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/questionbank.css" asp-append-version="true" />
-    <style>
-        .qb-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .qb-filter-select {
-            min-width: 170px;
-            max-width: 220px;
-        }
-        .qb-search-input {
-            flex: 1;
-            min-width: 220px;
-        }
-        .qb-category-tag {
-            font-size: 11.5px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 999px;
-            background: #EAEBF7;
-            color: var(--ink-soft);
-            display: inline-block;
-        }
-        .qb-options-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-top: 6px;
-        }
-        .qb-opt-badge {
-            font-size: 11px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 6px;
-            padding: 2px 6px;
-            color: var(--ink-soft);
-            box-shadow: inset 1px 1px 2px rgba(0,0,0,0.05);
-        }
-    </style>
 }
 
 <section class="dash-panel clay-card qb-panel">
@@ -113,108 +73,102 @@
     }
     else
     {
-        <table class="dash-table qb-table">
-            <thead>
-                <tr>
-                    <th>Question</th>
-                    <th>Type</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var q in Model.Questions)
-                {
+        <div class="table-responsive">
+            <table class="dash-table qb-table">
+                <thead>
                     <tr>
-                        <td class="qb-question-text">
-                            <strong>@q.QuestionText</strong>
-                            @if (q.Options != null && q.Options.Any())
-                            {
-                                <div class="qb-options-preview">
-                                    @foreach (var opt in q.Options.Take(4))
-                                    {
-                                        <span class="qb-opt-badge">@opt</span>
-                                    }
-                                    @if (q.Options.Count > 4)
-                                    {
-                                        <span class="qb-opt-badge">+@(q.Options.Count - 4) more</span>
-                                    }
-                                </div>
-                            }
-                        </td>
-                        <td>
-                            @switch (q.QuestionType)
-                            {
-                                case "5-Star Rating":
-                                case "Rating5":
-                                    <span class="type-pill" style="background:#FFEACC; color:#D97706;">⭐️ 5-Star</span>
-                                    break;
-                                case "1-10 Rating":
-                                case "Rating10":
-                                    <span class="type-pill" style="background:#E0E7FF; color:#4338CA;">🔟 1–10</span>
-                                    break;
-                                case "Single Choice":
-                                case "SingleChoice":
-                                    <span class="type-pill" style="background:#EDE5FF; color:var(--grape-dark);">🔘 Single choice</span>
-                                    break;
-                                case "Multiple Choice":
-                                case "MultipleChoice":
-                                    <span class="type-pill" style="background:#D7F7EC; color:var(--mint-dark);">☑️ Multiple choice</span>
-                                    break;
-                                case "Yes/No":
-                                case "YesNo":
-                                    <span class="type-pill" style="background:#FEF3C7; color:#B45309;">⚖️ Yes / No</span>
-                                    break;
-                                case "Dropdown":
-                                    <span class="type-pill" style="background:#E0F2FE; color:var(--sky-dark);">🔽 Dropdown</span>
-                                    break;
-                                case "Text":
-                                    <span class="type-pill" style="background:#F1F5F9; color:#475569;">📝 Short text</span>
-                                    break;
-                                case "Textarea":
-                                    <span class="type-pill" style="background:#F1F5F9; color:#475569;">📄 Long text</span>
-                                    break;
-                                default:
-                                    <span class="type-pill">@q.QuestionType</span>
-                                    break;
-                            }
-                        </td>
-                        <td>
-                            <span class="qb-category-tag">@q.Category</span>
-                        </td>
-                        <td>
-                            @if (q.IsActive)
-                            {
-                                <span class="status-badge status-published">Active</span>
-                            }
-                            else
-                            {
-                                <span class="status-badge status-archived">Inactive</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="qb-actions">
-                                <a asp-controller="QuestionBank" asp-action="Edit" asp-route-id="@q.Id" class="qb-action-link">Edit</a>
-
-                                <form asp-controller="QuestionBank" asp-action="ToggleStatus" asp-route-id="@q.Id" method="post" class="qb-inline-form">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="qb-action-link">
-                                        @(q.IsActive ? "Deactivate" : "Activate")
-                                    </button>
-                                </form>
-
-                                <form asp-controller="QuestionBank" asp-action="Delete" asp-route-id="@q.Id" method="post" class="qb-inline-form">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="qb-action-link qb-action-danger" onclick="return confirm('Are you sure you want to delete this question?');">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+                        <th>Question</th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var q in Model.Questions)
+                    {
+                        <tr>
+                            <td class="qb-question-text">
+                                <strong>@q.QuestionText</strong>
+                                @if (q.Options != null && q.Options.Any())
+                                {
+                                    <div class="qb-options-preview">
+                                        @foreach (var opt in q.Options.Take(4))
+                                        {
+                                            <span class="qb-opt-badge">@opt</span>
+                                        }
+                                        @if (q.Options.Count > 4)
+                                        {
+                                            <span class="qb-opt-badge">+@(q.Options.Count - 4) more</span>
+                                        }
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                @switch (q.QuestionType)
+                                {
+                                    case "Rating5":
+                                        <span class="type-pill" style="background:#FEF3C7; color:#B45309;">⭐️ 1-5 Stars</span>
+                                        break;
+                                    case "Rating10":
+                                        <span class="type-pill" style="background:#FFEACC; color:#D97706;">🔢 1-10 Scale</span>
+                                        break;
+                                    case "MultipleChoice":
+                                        <span class="type-pill" style="background:#E0F2FE; color:#0369A1;">🔘 Single Choice</span>
+                                        break;
+                                    case "Checkbox":
+                                        <span class="type-pill" style="background:#DCFCE7; color:#15803D;">☑️ Multi Select</span>
+                                        break;
+                                    case "Text":
+                                        <span class="type-pill" style="background:#F3F4F6; color:#4B5563;">💬 Open Text</span>
+                                        break;
+                                    case "YesNo":
+                                        <span class="type-pill" style="background:#FEE2E2; color:#B91C1C;">👍 Yes / No</span>
+                                        break;
+                                    case "Likert":
+                                        <span class="type-pill" style="background:#EDE9FE; color:#6D28D9;">📊 5-Pt Likert</span>
+                                        break;
+                                    default:
+                                        <span class="type-pill">@q.QuestionType</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <span class="qb-category-tag">@q.Category</span>
+                            </td>
+                            <td>
+                                @if (q.IsActive)
+                                {
+                                    <span class="status-badge status-published">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge status-archived">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="qb-actions">
+                                    <a asp-controller="QuestionBank" asp-action="Edit" asp-route-id="@q.Id" class="qb-action-link">Edit</a>
+
+                                    <form asp-controller="QuestionBank" asp-action="ToggleStatus" asp-route-id="@q.Id" method="post" class="qb-inline-form">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="qb-action-link">
+                                            @(q.IsActive ? "Deactivate" : "Activate")
+                                        </button>
+                                    </form>
+
+                                    <form asp-controller="QuestionBank" asp-action="Delete" asp-route-id="@q.Id" method="post" class="qb-inline-form">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="qb-action-link qb-action-danger" onclick="return confirm('Are you sure you want to delete this question?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </section>

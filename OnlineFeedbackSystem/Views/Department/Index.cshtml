@@ -9,86 +9,6 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/departments.css" asp-append-version="true" />
-    <style>
-        .dept-table {
-            table-layout: fixed;
-            width: 100%;
-        }
-
-        .dept-table th:nth-child(1),
-        .dept-table td:nth-child(1) { width: 60%; }
-
-        .dept-table th:nth-child(2),
-        .dept-table td:nth-child(2) { width: 15%; }
-
-        .dept-table th:nth-child(3),
-        .dept-table td:nth-child(3) { width: 25%; }
-
-        .dept-actions-wrap {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .btn-action-edit {
-            font-family: var(--font-body);
-            font-weight: 700;
-            font-size: 12.5px;
-            color: var(--sky-dark);
-            background: #E0F2FE;
-            border: none;
-            cursor: pointer;
-            padding: 5px 14px;
-            border-radius: 999px;
-            text-decoration: none;
-            white-space: nowrap;
-            transition: all 0.15s ease;
-        }
-
-        .btn-action-edit:hover {
-            background: #BAE6FD;
-            color: var(--sky-dark);
-        }
-
-        .btn-action-deactivate {
-            font-family: var(--font-body);
-            font-weight: 700;
-            font-size: 12.5px;
-            color: var(--coral-dark);
-            background: #FEE2E2;
-            border: none;
-            cursor: pointer;
-            padding: 5px 14px;
-            border-radius: 999px;
-            white-space: nowrap;
-            transition: all 0.15s ease;
-        }
-
-        .btn-action-deactivate:hover {
-            background: #FECACA;
-        }
-
-        .btn-action-activate {
-            font-family: var(--font-body);
-            font-weight: 700;
-            font-size: 12.5px;
-            color: var(--mint-dark);
-            background: #D7F7EC;
-            border: none;
-            cursor: pointer;
-            padding: 5px 14px;
-            border-radius: 999px;
-            white-space: nowrap;
-            transition: all 0.15s ease;
-        }
-
-        .btn-action-activate:hover {
-            background: #A7F3D0;
-        }
-
-        .inline-form { display: inline; }
-    </style>
 }
 
 <section class="dash-panel clay-card" style="padding: 26px 24px;">
@@ -129,59 +49,61 @@
     }
     else
     {
-        <table class="dash-table dept-table">
-            <thead>
-                <tr>
-                    <th>Department</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var dept in Model)
-                {
+        <div class="table-responsive">
+            <table class="dash-table dept-table">
+                <thead>
                     <tr>
-                        <td>
-                            <strong style="color:var(--ink);">@dept.DepartmentName</strong>
-                        </td>
-                        <td>
-                            @if (dept.IsActive)
-                            {
-                                <span class="status-badge status-published">Active</span>
-                            }
-                            else
-                            {
-                                <span class="status-badge status-archived">Inactive</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="dept-actions-wrap">
-                                <a asp-controller="Department" asp-action="Edit" asp-route-id="@dept.DepartmentId" class="btn-action-edit">Edit</a>
-
+                        <th>Department</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var dept in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong style="color:var(--ink);">@dept.DepartmentName</strong>
+                            </td>
+                            <td>
                                 @if (dept.IsActive)
                                 {
-                                    <form asp-controller="Department" asp-action="Deactivate" asp-route-id="@dept.DepartmentId" method="post" class="inline-form">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn-action-deactivate"
-                                                onclick="return confirm('Deactivate @dept.DepartmentName?');">
-                                            Deactivate
-                                        </button>
-                                    </form>
+                                    <span class="status-badge status-published">Active</span>
                                 }
                                 else
                                 {
-                                    <form asp-controller="Department" asp-action="Activate" asp-route-id="@dept.DepartmentId" method="post" class="inline-form">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn-action-activate">
-                                            Activate
-                                        </button>
-                                    </form>
+                                    <span class="status-badge status-archived">Inactive</span>
                                 }
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                            </td>
+                            <td>
+                                <div class="dept-actions-wrap">
+                                    <a asp-controller="Department" asp-action="Edit" asp-route-id="@dept.DepartmentId" class="btn-action-edit">Edit</a>
+
+                                    @if (dept.IsActive)
+                                    {
+                                        <form asp-controller="Department" asp-action="Deactivate" asp-route-id="@dept.DepartmentId" method="post" class="inline-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-action-deactivate"
+                                                    onclick="return confirm('Deactivate @dept.DepartmentName?');">
+                                                Deactivate
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-controller="Department" asp-action="Activate" asp-route-id="@dept.DepartmentId" method="post" class="inline-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn-action-activate">
+                                                Activate
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </section>

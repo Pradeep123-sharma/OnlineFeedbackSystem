@@ -1,4 +1,4 @@
-﻿// ==========================================================
+// ==========================================================
 // Pulse — Online Feedback System
 // Landing page interactions: mobile nav + scroll reveal
 // ==========================================================
@@ -21,6 +21,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 navLinks.classList.remove('nav-links-open');
                 navToggle.setAttribute('aria-expanded', 'false');
             });
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function (e) {
+            if (navLinks.classList.contains('nav-links-open') &&
+                !navLinks.contains(e.target) &&
+                !navToggle.contains(e.target)) {
+                navLinks.classList.remove('nav-links-open');
+                navToggle.setAttribute('aria-expanded', 'false');
+            }
         });
     }
 
