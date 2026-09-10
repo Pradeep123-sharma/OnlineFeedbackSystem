@@ -8,15 +8,10 @@
 }
 
 @section Styles {
-    <style>
-        .resp-form-select {
-            min-width: 220px;
-            max-width: 320px;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/responses.css" asp-append-version="true" />
 }
 
-<section class="dash-panel clay-card" style="padding: 26px 24px;">
+<section class="dash-panel clay-card resp-archive-panel">
     <div class="dash-panel-head">
         <div>
             <h2>Responses Archive</h2>
@@ -52,62 +47,64 @@
     }
     else
     {
-        <table class="dash-table">
-            <thead>
-                <tr>
-                    <th>Submission Token</th>
-                    <th>Form Title</th>
-                    <th>Category</th>
-                    <th>Respondent</th>
-                    <th>Avg Rating</th>
-                    <th>Date Submitted</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var r in Model.Responses)
-                {
+        <div class="table-responsive">
+            <table class="dash-table">
+                <thead>
                     <tr>
-                        <td>
-                            <strong style="font-family:monospace; color:var(--coral-dark);">@r.SubmissionToken</strong>
-                        </td>
-                        <td>
-                            <strong>@r.FormTitle</strong>
-                        </td>
-                        <td>
-                            <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@r.Category</span>
-                        </td>
-                        <td>
-                            @if (r.IsAnonymous)
-                            {
-                                <span style="color:var(--ink-faint); font-style:italic;">🕶 Anonymous</span>
-                            }
-                            else
-                            {
-                                <span>@r.RespondentName</span>
-                            }
-                        </td>
-                        <td>
-                            @if (r.AverageRating.HasValue)
-                            {
-                                <span style="font-weight:800; color:#D97706;">⭐️ @r.AverageRating.Value.ToString("0.0")</span>
-                            }
-                            else
-                            {
-                                <span style="color:var(--ink-faint);">&ndash;</span>
-                            }
-                        </td>
-                        <td style="font-size:12.5px; color:var(--ink-soft);">
-                            @r.SubmittedAt.ToString("dd MMM yyyy, hh:mm tt")
-                        </td>
-                        <td>
-                            <a asp-controller="Responses" asp-action="Detail" asp-route-id="@r.Id" class="btn btn-secondary btn-sm" style="padding:6px 12px; font-size:12px;">
-                                View Answers &rarr;
-                            </a>
-                        </td>
+                        <th>Submission Token</th>
+                        <th>Form Title</th>
+                        <th>Category</th>
+                        <th>Respondent</th>
+                        <th>Avg Rating</th>
+                        <th>Date Submitted</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Responses)
+                    {
+                        <tr>
+                            <td>
+                                <strong style="font-family:monospace; color:var(--coral-dark);">@r.SubmissionToken</strong>
+                            </td>
+                            <td>
+                                <strong>@r.FormTitle</strong>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:#EAEBF7; color:var(--ink-soft); font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:999px;">@r.Category</span>
+                            </td>
+                            <td>
+                                @if (r.IsAnonymous)
+                                {
+                                    <span style="color:var(--ink-faint); font-style:italic;">🕶 Anonymous</span>
+                                }
+                                else
+                                {
+                                    <span>@r.RespondentName</span>
+                                }
+                            </td>
+                            <td>
+                                @if (r.AverageRating.HasValue)
+                                {
+                                    <span style="font-weight:800; color:#D97706;">⭐️ @r.AverageRating.Value.ToString("0.0")</span>
+                                }
+                                else
+                                {
+                                    <span style="color:var(--ink-faint);">&ndash;</span>
+                                }
+                            </td>
+                            <td style="font-size:12.5px; color:var(--ink-soft);">
+                                @r.SubmittedAt.ToString("dd MMM yyyy, hh:mm tt")
+                            </td>
+                            <td>
+                                <a asp-controller="Responses" asp-action="Detail" asp-route-id="@r.Id" class="btn btn-secondary btn-sm" style="padding:6px 12px; font-size:12px;">
+                                    View Answers &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
 </section>

@@ -1,5 +1,5 @@
-﻿/* ==========================================================
-   Pulse — Super Admin Dashboard styles
+/* ==========================================================
+   Pulse — Dashboard & Layout System Styles
    Reuses tokens (--clay, --shadow-out, fonts, icon-* backgrounds,
    clay-card, clay-chip-static, eyebrow, q-emoji, btn) from landing.css.
    Link landing.css BEFORE this file.
@@ -8,12 +8,87 @@
 .dash-body {
     background: var(--bg);
     min-height: 100vh;
+    color: var(--ink);
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 
 .dash-shell {
     display: grid;
-    grid-template-columns: 268px 1fr;
+    grid-template-columns: 268px minmax(0, 1fr);
     min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* ---------- Brand & Icons in Layout ---------- */
+.brand-mark {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 10px !important;
+    background: var(--clay, #F2F4FC) !important;
+    box-shadow: 3px 3px 7px rgba(166, 175, 195, 0.5), -3px -3px 7px rgba(255, 255, 255, 0.9) !important;
+    flex-shrink: 0 !important;
+}
+
+.brand-mark svg {
+    width: 20px !important;
+    height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    display: block !important;
+}
+
+/* ---------- Notifications Bell & Badges in Topbar ---------- */
+.notif-bell-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 999px;
+    background: var(--clay, #F2F4FC);
+    box-shadow: 6px 6px 14px rgba(166, 175, 195, 0.55), -6px -6px 14px rgba(255, 255, 255, 0.95);
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.notif-bell-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 10px rgba(166, 175, 195, 0.6), -4px -4px 10px rgba(255, 255, 255, 1);
+}
+
+.notif-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #EF4444;
+    color: #ffffff;
+    font-size: 10.5px;
+    font-weight: 800;
+    border-radius: 999px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
+    border: 2px solid #FFFFFF;
 }
 
 /* ---------- Sidebar ---------- */
@@ -26,12 +101,19 @@
     position: sticky;
     top: 0;
     height: 100vh;
+    z-index: 999;
 }
 
 .dash-brand {
     padding: 6px 10px 20px;
     margin-bottom: 8px;
     border-bottom: 1px dashed #D9DCF0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
 }
 
 .dash-nav {
@@ -52,9 +134,9 @@
     margin: 18px 10px 6px;
 }
 
-    .dash-nav-label:first-child {
-        margin-top: 4px;
-    }
+.dash-nav-label:first-child {
+    margin-top: 4px;
+}
 
 .dash-nav-link {
     display: flex;
@@ -66,24 +148,26 @@
     font-weight: 700;
     font-size: 14px;
     color: var(--ink-soft);
+    text-decoration: none;
     transition: background 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
 }
 
-    .dash-nav-link:hover {
-        background: var(--clay-soft);
-        color: var(--ink);
-    }
+.dash-nav-link:hover {
+    background: var(--clay-soft);
+    color: var(--ink);
+}
 
-    .dash-nav-link.active {
-        background: var(--clay-soft);
-        box-shadow: var(--shadow-in);
-        color: var(--coral-dark);
-    }
+.dash-nav-link.active {
+    background: var(--clay-soft);
+    box-shadow: var(--shadow-in);
+    color: var(--coral-dark);
+}
 
 .nav-emoji {
     font-size: 16px;
     width: 20px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .soon-tag {
@@ -92,8 +176,8 @@
     font-weight: 800;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: var(--ink-faint);
-    background: var(--clay-soft);
+    color: #D97706;
+    background: #FFEACC;
     padding: 2px 8px;
     border-radius: 999px;
 }
@@ -107,159 +191,301 @@
     width: 100%;
 }
 
-/* ---------- Main ---------- */
+/* ---------- Main Content Area ---------- */
 .dash-main {
-    padding: 32px clamp(20px, 3vw, 44px) 60px;
+    padding: 32px clamp(16px, 3vw, 40px) 60px;
     overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .dash-topbar {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
-    .dash-topbar h1 {
-        font-family: var(--font-display);
-        font-weight: 600;
-        font-size: 28px;
-    }
+.dash-topbar-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.dash-topbar-title-wrap div {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.dash-topbar h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(20px, 3.5vw, 28px);
+    line-height: 1.2;
+    margin: 0;
+    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dash-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    max-width: 100%;
+}
 
 .dash-user-chip {
     font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--clay);
+    box-shadow: var(--shadow-out);
+    color: var(--ink);
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Mobile Nav Toggle Button ---------- */
+.dash-nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    border-radius: 12px;
+    background: var(--clay);
+    box-shadow: var(--shadow-out);
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.dash-nav-toggle span {
+    width: 18px;
+    height: 2.5px;
+    background: var(--ink);
+    border-radius: 2px;
+}
+
+.dash-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(33, 29, 58, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.dash-sidebar-overlay.dash-overlay-visible {
+    display: block;
+    opacity: 1;
+}
+
+body.dash-noscroll {
+    overflow: hidden;
 }
 
 /* ---------- Stat grid ---------- */
 .dash-stats-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .dash-stat-card {
-    padding: 22px 18px;
+    padding: 16px 14px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+    border-radius: var(--radius-md);
+    background: var(--clay);
+    box-shadow: var(--shadow-out);
+    min-width: 0;
+    overflow: hidden;
 }
 
 .dash-stat-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    margin-bottom: 6px;
+    font-size: 17px;
+    margin-bottom: 4px;
     box-shadow: var(--shadow-in);
+    flex-shrink: 0;
 }
 
 .dash-stat-num {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 26px;
+    font-size: 24px;
     color: var(--ink);
+    line-height: 1.1;
+    word-break: break-word;
 }
 
 .dash-stat-label {
-    font-size: 12.5px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--ink-faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* ---------- Lower grid ---------- */
 .dash-lower-grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
     gap: 20px;
     align-items: start;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .dash-panel {
-    padding: 26px 24px;
+    padding: 24px 22px;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.clay-card {
+    min-width: 0;
+    max-width: 100%;
 }
 
 .dash-panel-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-width: 0;
 }
 
-    .dash-panel-head h2 {
-        font-family: var(--font-display);
-        font-weight: 500;
-        font-size: 18px;
-    }
+.dash-panel-head h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    margin: 0;
+    word-break: break-word;
+}
 
 .dash-panel-link {
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 700;
     color: var(--sky-dark);
+    text-decoration: none;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+}
+
+.dash-panel-link:hover {
+    color: var(--coral-dark);
 }
 
 .dash-panel-sub {
     font-size: 13px;
     color: var(--ink-faint);
     margin-bottom: 18px;
+    word-break: break-word;
 }
 
 .dash-empty {
     font-size: 14px;
     color: var(--ink-faint);
     padding: 24px 0;
+    text-align: center;
 }
 
-/* ---------- Table ---------- */
+/* ---------- Responsive Tables & Wrappers ---------- */
+.table-responsive {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 14px;
+    padding-bottom: 6px;
+    display: block;
+    min-width: 0;
+}
+
 .dash-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-top: 14px;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+    min-width: 540px;
 }
 
-    .dash-table th {
-        text-align: left;
-        font-size: 11.5px;
-        font-weight: 800;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
-        color: var(--ink-faint);
-        padding: 0 10px 10px;
-    }
+.dash-table th {
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0 12px 6px;
+    border: none;
+    white-space: nowrap;
+}
 
-    .dash-table td {
-        background: var(--clay-soft);
-        padding: 13px 10px;
-        font-size: 14px;
-        font-weight: 700;
-        color: var(--ink);
-    }
+.dash-table td {
+    background: var(--clay-soft);
+    padding: 13px 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    border: none;
+}
 
-    .dash-table tr td:first-child {
-        border-radius: 12px 0 0 12px;
-    }
+.dash-table tr td:first-child {
+    border-radius: 12px 0 0 12px;
+}
 
-    .dash-table tr td:last-child {
-        border-radius: 0 12px 12px 0;
-    }
+.dash-table tr td:last-child {
+    border-radius: 0 12px 12px 0;
+}
 
-    .dash-table tr {
-        box-shadow: var(--shadow-out);
-    }
-
-    .dash-table tbody tr {
-        margin-bottom: 8px;
-        display: table-row;
-    }
-
-    .dash-table tbody {
-        display: table-row-group;
-    }
+.dash-table tr {
+    box-shadow: 3px 3px 8px rgba(166, 175, 195, 0.25);
+}
 
 .status-badge {
     display: inline-block;
@@ -268,6 +494,7 @@
     padding: 4px 12px;
     border-radius: 999px;
     text-transform: capitalize;
+    white-space: nowrap;
 }
 
 .status-published {
@@ -295,6 +522,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
 }
 
 .quick-action {
@@ -309,50 +537,272 @@
     font-weight: 700;
     font-size: 14px;
     color: var(--ink);
-    transition: transform 0.15s ease;
+    text-decoration: none;
+    transition: transform 0.15s ease, background 0.15s ease;
+    min-width: 0;
 }
 
-    .quick-action:hover {
-        transform: translateY(-2px);
-    }
+.quick-action:hover {
+    transform: translateY(-2px);
+    background: #ffffff;
+}
 
-/* ---------- Responsive ---------- */
-@media (max-width: 1180px) {
+.quick-action span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- Claymorphism Pagination ---------- */
+.clay-pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px dashed #D9DCF0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.pagination-meta {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.pagination-pagesize-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+}
+
+.pagination-pagesize-select select {
+    padding: 4px 24px 4px 10px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    background-position: right 8px center !important;
+    min-width: 60px;
+    width: auto !important;
+    display: inline-block !important;
+}
+
+.pagination-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    background: var(--clay-soft);
+    box-shadow: var(--shadow-out);
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.pagination-btn:hover:not(.disabled):not(.active) {
+    color: var(--ink);
+    transform: translateY(-1px);
+    background: #ffffff;
+}
+
+.pagination-btn.active {
+    background: linear-gradient(135deg, var(--coral), var(--coral-dark));
+    color: #ffffff;
+    box-shadow: var(--shadow-in);
+    pointer-events: none;
+}
+
+.pagination-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+}
+
+/* ---------- Responsive Breakpoints ---------- */
+@media (max-width: 1200px) {
     .dash-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .dash-lower-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 992px) {
     .dash-shell {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        display: block;
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .dash-nav-toggle {
+        display: flex;
     }
 
     .dash-sidebar {
-        position: relative;
-        height: auto;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 280px;
+        max-width: 85vw;
+        height: 100vh;
+        box-shadow: var(--shadow-out-lg);
+        transform: translateX(-100%);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1000;
+        padding: 24px 20px;
     }
 
-    .dash-nav {
-        display: none;
+    .dash-sidebar.dash-sidebar-open {
+        transform: translateX(0);
     }
 
-    .dash-logout-form {
-        border-top: none;
-        padding-top: 0;
-        margin-left: auto;
+    .dash-main {
+        padding: 16px 14px 44px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .dash-topbar {
+        margin-bottom: 20px;
     }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 768px) {
     .dash-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .dash-stat-card {
+        padding: 14px 12px;
+    }
+
+    .dash-stat-num {
+        font-size: 22px;
+    }
+
+    .dash-stat-label {
+        font-size: 11.5px;
+    }
+
+    .dash-panel {
+        padding: 20px 16px;
+    }
+
+    .dash-topbar {
+        gap: 12px;
+    }
+
+    .dash-user-chip {
+        max-width: 160px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}
+
+@media (max-width: 640px) {
+    .clay-pagination-bar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 14px;
+    }
+
+    .pagination-meta {
+        justify-content: center;
+    }
+
+    .pagination-nav {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dash-main {
+        padding: 12px 10px 40px;
+    }
+
+    .dash-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .dash-stat-card {
+        padding: 12px 10px;
+        gap: 4px;
+        border-radius: var(--radius-sm);
+    }
+
+    .dash-stat-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 15px;
+        margin-bottom: 2px;
+        border-radius: 8px;
+    }
+
+    .dash-stat-num {
+        font-size: 19px;
+    }
+
+    .dash-stat-label {
+        font-size: 10.5px;
+    }
+
+    .dash-panel {
+        padding: 16px 12px;
+        border-radius: var(--radius-sm);
+    }
+
+    .dash-panel-head h2 {
+        font-size: 17px;
+    }
+
+    .dash-user-chip {
+        max-width: 120px;
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+    .notif-bell-chip {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+    }
+
+    .dash-nav-toggle {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
     }
 }

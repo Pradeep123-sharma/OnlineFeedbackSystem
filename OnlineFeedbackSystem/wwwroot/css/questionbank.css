@@ -7,6 +7,24 @@
     padding: 26px 24px;
 }
 
+.qb-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.qb-filter-select {
+    min-width: 170px;
+    max-width: 220px;
+}
+
+.qb-search-input {
+    flex: 1;
+    min-width: 220px;
+}
+
 .qb-success {
     background: #D7F7EC;
     color: var(--mint-dark);

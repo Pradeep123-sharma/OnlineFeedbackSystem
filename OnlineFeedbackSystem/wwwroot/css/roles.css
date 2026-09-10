@@ -1,7 +1,5 @@
-﻿/* ==========================================================
+/* ==========================================================
    Pulse — Roles styles
-   Reuses .dash-table, .type-pill, .dash-panel-sub from dashboard.css /
-   question-bank.css. Link those BEFORE this file.
    ========================================================== */
 
 .role-panel {
@@ -13,6 +11,21 @@
     font-weight: 600;
 }
 
+.role-table {
+    width: 100%;
+    min-width: 480px;
+}
+
 .role-table th:first-child, .role-table td:first-child {
     width: 220px;
+}
+
+.type-pill {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #EDE5FF;
+    color: var(--grape-dark);
 }

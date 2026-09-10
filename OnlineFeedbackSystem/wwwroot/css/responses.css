@@ -1,0 +1,67 @@
+/* ==========================================================
+   Pulse — Responses Archive & Detail Inspection Styles
+   ========================================================== */
+
+.resp-archive-panel {
+    padding: 26px 24px;
+}
+
+.resp-form-select {
+    min-width: 220px;
+    max-width: 320px;
+}
+
+.resp-detail-shell {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 36px 32px;
+}
+
+.resp-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    border-bottom: 2px dashed #D9DCF0;
+    padding-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.resp-detail-token {
+    font-family: monospace;
+    background: var(--clay-soft);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-weight: 800;
+    color: var(--coral-dark);
+    font-size: 14px;
+    box-shadow: var(--shadow-in);
+}
+
+.resp-answer-card {
+    background: var(--clay-soft);
+    padding: 18px 22px;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.02);
+}
+
+.resp-answer-text {
+    font-size: 14px;
+    color: var(--ink);
+    background: rgba(255,255,255,0.7);
+    padding: 10px 14px;
+    border-radius: 10px;
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .resp-detail-shell {
+        padding: 24px 18px;
+    }
+
+    .resp-form-select {
+        max-width: 100%;
+        width: 100%;
+    }
+}

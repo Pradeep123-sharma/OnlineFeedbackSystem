@@ -1,4 +1,4 @@
-﻿@inject OnlineFeedbackSystem.Repositories.INotificationsRepository NotificationsRepo
+@inject OnlineFeedbackSystem.Repositories.INotificationsRepository NotificationsRepo
 @{
     string activeNav = ViewData["ActiveNav"] as string ?? string.Empty;
     string pageEyebrow = ViewData["PageEyebrow"] as string ?? "Admin Portal";
@@ -30,82 +30,24 @@
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/forms.css" asp-append-version="true" />
-    <style>
-        .brand-mark {
-            width: 36px !important;
-            height: 36px !important;
-            min-width: 36px !important;
-            min-height: 36px !important;
-            max-width: 36px !important;
-            max-height: 36px !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            border-radius: 10px !important;
-            background: var(--clay, #F2F4FC) !important;
-            box-shadow: 3px 3px 7px rgba(166, 175, 195, 0.5), -3px -3px 7px rgba(255, 255, 255, 0.9) !important;
-            flex-shrink: 0 !important;
-        }
-        .brand-mark svg {
-            width: 20px !important;
-            height: 20px !important;
-            max-width: 20px !important;
-            max-height: 20px !important;
-            display: block !important;
-        }
-        .notif-bell-chip {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 44px;
-            height: 44px;
-            border-radius: 999px;
-            background: var(--clay, #F2F4FC);
-            box-shadow: 6px 6px 14px rgba(166, 175, 195, 0.55), -6px -6px 14px rgba(255, 255, 255, 0.95);
-            color: var(--ink);
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .notif-bell-chip:hover {
-            transform: translateY(-2px);
-            box-shadow: 4px 4px 10px rgba(166, 175, 195, 0.6), -4px -4px 10px rgba(255, 255, 255, 1);
-        }
-        .notif-badge {
-            position: absolute;
-            top: -3px;
-            right: -3px;
-            background: #EF4444;
-            color: #ffffff;
-            font-size: 10.5px;
-            font-weight: 800;
-            border-radius: 999px;
-            min-width: 19px;
-            height: 19px;
-            padding: 0 5px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.45);
-            border: 2px solid #FFFFFF;
-        }
-    </style>
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body class="dash-body">
+
+    <!-- Mobile Drawer Overlay -->
+    <div class="dash-sidebar-overlay" id="dashSidebarOverlay"></div>
 
     <div class="dash-shell">
 
         <!-- ===== Sidebar for Admin ===== -->
         <aside class="dash-sidebar">
             <a href="/" class="brand dash-brand">
-                <span class="brand-mark" style="width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;">
-                    <svg style="width:20px; height:20px; max-width:20px; max-height:20px;" viewBox="0 0 24 24" fill="none">
+                <span class="brand-mark">
+                    <svg viewBox="0 0 24 24" fill="none">
                         <path d="M3 12h4l2-7 4 14 2-7h6" stroke="#33314B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </span>
-                Pulse <span class="soon-tag" style="background:#FFEACC; color:#D97706; margin-left:6px;">Admin</span>
+                Pulse <span class="soon-tag">Admin</span>
             </a>
 
             <nav class="dash-nav">
@@ -155,19 +97,23 @@
         <div class="dash-main">
 
             <header class="dash-topbar">
-                <div>
-                    <span class="eyebrow">@pageEyebrow</span>
-                    <h1>@ViewData["PageTitle"]</h1>
+                <div class="dash-topbar-title-wrap">
+                    <button class="dash-nav-toggle" id="dashNavToggle" aria-label="Toggle navigation" aria-expanded="false">
+                        <span></span><span></span><span></span>
+                    </button>
+                    <div>
+                        <span class="eyebrow">@pageEyebrow</span>
+                        <h1>@ViewData["PageTitle"]</h1>
+                    </div>
                 </div>
-                <div style="display:flex; align-items:center; gap:12px;">
+                <div class="dash-topbar-actions">
                     <a asp-controller="Notifications" asp-action="Index" class="notif-bell-chip" title="Notifications">
                         <span style="font-size:19px; line-height:1;" aria-hidden="true">&#128276;</span>
-                        <span class="notif-badge" style="display:@(unreadCount > 0 ? "inline-flex" : 
-                        "none");">
+                        <span class="notif-badge" style="display:@(unreadCount > 0 ? "inline-flex" : "none");">
                             @(unreadCount > 99 ? "99+" : unreadCount.ToString())
                         </span>
                     </a>
-                    <a asp-controller="Settings" asp-action="Index" class="dash-user-chip clay-chip-static" style="text-decoration:none;" title="Account settings">
+                    <a asp-controller="Settings" asp-action="Index" class="dash-user-chip clay-chip-static" style="text-decoration:none;" title="@(User.Identity?.Name ?? "Administrator")">
                         <span class="q-emoji" aria-hidden="true">&#128100;</span> @(User.Identity?.Name ?? "Administrator")
                     </a>
                 </div>
@@ -178,27 +124,7 @@
         </div>
     </div>
 
-    <script>
-        (function() {
-            function updateUnreadBadge() {
-                fetch('/Notifications/GetUnreadCount')
-                    .then(r => r.json())
-                    .then(data => {
-                        const badges = document.querySelectorAll('.notif-badge, .notif-badge-sidebar');
-                        badges.forEach(badge => {
-                            if (data && data.count > 0) {
-                                badge.textContent = data.count > 99 ? '99+' : data.count;
-                                badge.style.display = 'inline-flex';
-                            } else {
-                                badge.style.display = 'none';
-                            }
-                        });
-                    })
-                    .catch(() => {});
-            }
-            setInterval(updateUnreadBadge, 25000);
-        })();
-    </script>
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

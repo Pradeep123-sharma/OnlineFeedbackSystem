@@ -1,10 +1,12 @@
-﻿@model List<OnlineFeedbackSystem.Models.ViewModels.RoleListItemViewModel>
+@model List<OnlineFeedbackSystem.Models.ViewModels.RoleListItemViewModel>
 @{
     Layout = "_DashboardLayout";
+    ViewData["Title"] = "Roles & Permissions — Pulse";
+    ViewData["PageTitle"] = "Roles & Permissions";
+    ViewData["ActiveNav"] = "Roles";
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/question-bank.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/roles.css" asp-append-version="true" />
 }
 
@@ -18,21 +20,23 @@
         access checks throughout the app.
     </p>
 
-    <table class="dash-table role-table">
-        <thead>
-            <tr>
-                <th>Role</th>
-                <th>Responsibilities</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var role in Model)
-            {
+    <div class="table-responsive">
+        <table class="dash-table role-table">
+            <thead>
                 <tr>
-                    <td><span class="type-pill">@role.RoleName</span></td>
-                    <td class="role-desc">@role.Responsibility</td>
+                    <th>Role</th>
+                    <th>Responsibilities</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var role in Model)
+                {
+                    <tr>
+                        <td><span class="type-pill">@role.RoleName</span></td>
+                        <td class="role-desc">@role.Responsibility</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </section>

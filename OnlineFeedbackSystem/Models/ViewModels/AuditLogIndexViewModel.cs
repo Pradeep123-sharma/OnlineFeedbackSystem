@@ -16,6 +16,16 @@ namespace OnlineFeedbackSystem.Models.ViewModels
         public int FormActionsCount { get; set; }
         public List<string> ActionTypes { get; set; } = new();
         public List<string> EntityTypes { get; set; } = new();
+
+        // Pagination Properties
+        public int PageIndex { get; set; } = 1;
+        public int PageSize { get; set; } = 15;
+        public int TotalFilteredLogs { get; set; }
+        public int TotalPages => (int)Math.Ceiling((double)TotalFilteredLogs / (PageSize > 0 ? PageSize : 15));
+        public bool HasPreviousPage => PageIndex > 1;
+        public bool HasNextPage => PageIndex < TotalPages;
+        public int StartItemIndex => TotalFilteredLogs == 0 ? 0 : ((PageIndex - 1) * PageSize) + 1;
+        public int EndItemIndex => Math.Min(PageIndex * PageSize, TotalFilteredLogs);
     }
 
     public class AuditLogStatsDto

@@ -8,93 +8,7 @@
 }
 
 @section Styles {
-    <style>
-        .audit-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-            margin-bottom: 24px;
-        }
-
-        .audit-stat-card {
-            padding: 20px 22px;
-            border-radius: var(--radius-md, 18px);
-            background: var(--clay, #F2F4FC);
-            box-shadow: var(--shadow-out, 6px 6px 14px rgba(166, 175, 195, 0.45), -6px -6px 14px rgba(255, 255, 255, 0.9));
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .audit-stat-icon {
-            width: 46px;
-            height: 46px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            box-shadow: var(--shadow-in);
-        }
-
-        .audit-filters-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 22px;
-        }
-
-        .action-badge {
-            font-size: 11.5px;
-            font-weight: 800;
-            padding: 3px 10px;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .action-login { background: #D7F7EC; color: #065F46; }
-        .action-create { background: #E0F2FE; color: #0369A1; }
-        .action-update { background: #FEF3C7; color: #B45309; }
-        .action-publish { background: #EDE5FF; color: #5B21B6; }
-        .action-close { background: #FFE4E6; color: #BE123C; }
-        .action-delete { background: #FEE2E2; color: #B91C1C; }
-        .action-default { background: var(--clay-soft, #EAEBF7); color: var(--ink-soft, #55536E); }
-
-        .entity-chip {
-            font-size: 11.5px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--ink, #33314B);
-            display: inline-block;
-        }
-
-        .user-chip-mini {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-avatar-mini {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #FFEACC;
-            color: #D97706;
-            font-size: 12px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/auditlogs.css" asp-append-version="true" />
 }
 
 <!-- ===== Top Stat Cards ===== -->
@@ -178,9 +92,8 @@
             <p style="font-size: 12.5px; color: var(--ink-faint); margin: 0;">Logs will populate automatically as users log in, manage forms, or submit responses.</p>
         </div>
     }
-    else
-    {
-        <div style="overflow-x: auto;">
+    else{
+        <div class="table-responsive">
             <table class="dash-table">
                 <thead>
                     <tr>
@@ -261,5 +174,102 @@
                 </tbody>
             </table>
         </div>
+
+        @if (Model.TotalFilteredLogs > 0)
+        {
+            <div class="clay-pagination-bar">
+                <div class="pagination-meta">
+                    <span>Showing <strong>@Model.StartItemIndex&ndash;@Model.EndItemIndex</strong> of <strong>@Model.TotalFilteredLogs</strong> logs</span>
+                    <div class="pagination-pagesize-select">
+                        <span>Show</span>
+                        <form method="get" asp-controller="AuditLogs" asp-action="Index" style="display:inline-block; margin:0;">
+                            <input type="hidden" name="search" value="@Model.SearchQuery" />
+                            <input type="hidden" name="actionType" value="@Model.SelectedAction" />
+                            <input type="hidden" name="entityName" value="@Model.SelectedEntity" />
+                            <input type="hidden" name="page" value="1" />
+                            <select name="pageSize" class="clay-select" onchange="this.form.submit()">
+                                <option value="10" selected="@(Model.PageSize == 10 ? "selected" : null)">10</option>
+                                <option value="15" selected="@(Model.PageSize == 15 ? "selected" : null)">15</option>
+                                <option value="25" selected="@(Model.PageSize == 25 ? "selected" : null)">25</option>
+                                <option value="50" selected="@(Model.PageSize == 50 ? "selected" : null)">50</option>
+                            </select>
+                        </form>
+                        <span>per page</span>
+                    </div>
+                </div>
+
+                @if (Model.TotalPages > 1)
+                {
+                    <div class="pagination-nav">
+                        <a asp-controller="AuditLogs" asp-action="Index"
+                           asp-route-page="1"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-search="@Model.SearchQuery"
+                           asp-route-actionType="@Model.SelectedAction"
+                           asp-route-entityName="@Model.SelectedEntity"
+                           class="pagination-btn @(!Model.HasPreviousPage ? "disabled" : "")"
+                           title="First Page">
+                            &laquo;
+                        </a>
+
+                        <a asp-controller="AuditLogs" asp-action="Index"
+                           asp-route-page="@(Model.PageIndex - 1)"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-search="@Model.SearchQuery"
+                           asp-route-actionType="@Model.SelectedAction"
+                           asp-route-entityName="@Model.SelectedEntity"
+                           class="pagination-btn @(!Model.HasPreviousPage ? "disabled" : "")"
+                           title="Previous Page">
+                            &lsaquo;
+                        </a>
+
+                        @{
+                            int startPage = Math.Max(1, Model.PageIndex - 2);
+                            int endPage = Math.Min(Model.TotalPages, Model.PageIndex + 2);
+                            if (endPage - startPage < 4)
+                            {
+                                if (startPage == 1) endPage = Math.Min(Model.TotalPages, startPage + 4);
+                                else if (endPage == Model.TotalPages) startPage = Math.Max(1, endPage - 4);
+                            }
+                        }
+
+                        @for (int p = startPage; p <= endPage; p++)
+                        {
+                            <a asp-controller="AuditLogs" asp-action="Index"
+                               asp-route-page="@p"
+                               asp-route-pageSize="@Model.PageSize"
+                               asp-route-search="@Model.SearchQuery"
+                               asp-route-actionType="@Model.SelectedAction"
+                               asp-route-entityName="@Model.SelectedEntity"
+                               class="pagination-btn @(p == Model.PageIndex ? "active" : "")">
+                                @p
+                            </a>
+                        }
+
+                        <a asp-controller="AuditLogs" asp-action="Index"
+                           asp-route-page="@(Model.PageIndex + 1)"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-search="@Model.SearchQuery"
+                           asp-route-actionType="@Model.SelectedAction"
+                           asp-route-entityName="@Model.SelectedEntity"
+                           class="pagination-btn @(!Model.HasNextPage ? "disabled" : "")"
+                           title="Next Page">
+                            &rsaquo;
+                        </a>
+
+                        <a asp-controller="AuditLogs" asp-action="Index"
+                           asp-route-page="@Model.TotalPages"
+                           asp-route-pageSize="@Model.PageSize"
+                           asp-route-search="@Model.SearchQuery"
+                           asp-route-actionType="@Model.SelectedAction"
+                           asp-route-entityName="@Model.SelectedEntity"
+                           class="pagination-btn @(!Model.HasNextPage ? "disabled" : "")"
+                           title="Last Page">
+                            &raquo;
+                        </a>
+                    </div>
+                }
+            </div>
+        }
     }
 </section>
